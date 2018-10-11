@@ -29,6 +29,7 @@ Shyam:
     Further, found and shared tutorials on Flask and SQLite python for the rest of the group to complete.
 
 Christopher:
+    Attended initial group meeting for the project, and completed the tutorials on FLASK.
 
 Raphael:
     Attended meeting for the project. Completed tutorials on FLASK.
