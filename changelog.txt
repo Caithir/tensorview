@@ -29,7 +29,7 @@ Shayam:
 Christopher:
 
 Raphael:
-
+    Attended meeting for the project. Completed tutorials on FLASK.
 
 
 
