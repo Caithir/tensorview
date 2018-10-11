@@ -27,6 +27,7 @@ Rachel:
 Shayam:
 
 Christopher:
+    Attended initial group meeting for the project, and completed the tutorials on FLASK.
 
 Raphael:
     Attended meeting for the project. Completed tutorials on FLASK.
