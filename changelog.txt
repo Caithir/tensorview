@@ -5,7 +5,7 @@ Group member list:
 
     Colter Norick
     Rachel Shapiro
-    Shayam Pradheep
+    Shyam Pradheep
     Christopher Ong
     Raphael Kim
 
@@ -24,7 +24,9 @@ Rachel:
     Attended meeting on visions for the project, including schema discussion and page layouts
     Heavily edited project proposal and completed tutorials on how to use FLASK and SQLITE.
 
-Shayam:
+Shyam:
+    Attended the meeting on visions for the projects which involved deciding on how we would design the schema as well as what framework we would use for the project. 
+    Further, found and shared tutorials on Flask and SQLite python for the rest of the group to complete.
 
 Christopher:
     Attended initial group meeting for the project, and completed tutorials on FLASK.
