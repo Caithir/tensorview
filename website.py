@@ -4,5 +4,3 @@ env = Environment(
     autoescape=select_autoescape(['html', 'xml'])
 )
 
-
-test
