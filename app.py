@@ -1,47 +1,35 @@
-from flask import Flask
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'TEST if it works'
-
-# @app.route('./index.html')
+# from flask import Flask, render_template
+#
+# app = Flask(__name__)
+#
+#
+# # @app.route('/')
+# # def hello_world():
+# #     return 'TEST if it works'
+#
+# @app.route('/')
 # def table():
-#     return 'Hello World!'
-
-if __name__ == '__main__':
-    app.run()
-
-
-# import things
-from flask_table import Table, Col
-
-# Declare your table
-class ItemTable(Table):
-    name = Col('Name')
-    description = Col('Description')
-
-# Get some objects
-class Item(object):
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-items = [Item('Name1', 'Description1'),
-         Item('Name2', 'Description2'),
-         Item('Name3', 'Description3')]
-# Or, equivalently, some dicts
-items = [dict(name='Name1', description='Description1'),
-         dict(name='Name2', description='Description2'),
-         dict(name='Name3', description='Description3')]
-
-# Or, more likely, load items from your database with something like
-items = ItemModel.query.all()
-
-# Populate the table
-table = ItemTable(items)
-
-# Print the html
-print(table.__html__())
-# or just {{ table }} from within a Jinja template
+#     return render_template('index.html', )
+#
+# if __name__ == '__main__':
+#     app.run()
+#
+# from flask import Flask, render_template
+# app = Flask(__name__)
+#
+#
+# @app.route("/")
+# def template_test():
+#     return render_template('index.html', my_string="Wheeeee!", my_list=[0,1,2,3,4,5])
+#
+#
+# # if __name__ == '__main__':
+# #     app.run(debug=True)
+#
+# from jinja2 import Template
+# t = Template("Hello {{ something }}!")
+# t.render(something="World")
+#
+#
+# t = Template("My favorite numbers: {% for n in range(1,10) %}{{n}} " "{% endfor %}")
+# t.render()

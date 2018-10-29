@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Template Example</title>
+</head>
+<body>
+<div class="container">
+    <p>Table Name: {{ my_string }}</p>
+    <p>Value from the list: {{ my_list[3] }}</p>
+    <p>Loop through the list:</p>
+    <ul>
+        {% for n in my_list %}
+            <li>{{ n }}</li>
+        {% endfor %}
+    </ul>
+    <table>
+        <tr>
+            {% for cell in my_list %}
+                <td><b>{{ cell }}</b></td>
+            {% endfor %}
+        </tr>
+        {% for row in fillups %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
