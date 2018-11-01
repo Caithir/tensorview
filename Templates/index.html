@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Template Example</title>
+    <style>
+        #customers {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 30%;
+        }
+
+        #customers td, #customers th {
+            border: 2px solid #ddd;
+            padding: 6px;
+        }
+
+        #customers tr:nth-child(even) {
+            background-color: #F1F3FF;
+        }
+
+        #customers tr:hover {
+            background-color: #ddd;
+        }
+
+        #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #000000;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Table Name: {{ my_string }}</h1>
+    <FORM METHOD="POST" ACTION="http://jkorpela.fi/cgi-bin/echo.cgi">
+    <table id="customers">
+        <tbody>
+        <tr>
+            {% for cell in my_list %}
+                <td><b>{{ cell }}</b></td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td><b></b></td>
+            {% for cell in range((my_list|length)-1) %}
+                <td><b><INPUT TYPE="TEXT" NAME="name" SIZE="20"></b></td>
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </tr>
+        {% for row in fillups %}
+            <tr>
+                {% for cell in row %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </FORM>
+</div>
+</body>
+</html>
+
+
+{#code for syling used from here#}
+{#https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy#}
