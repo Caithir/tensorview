@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Flask Template Example</title>
     <style>
@@ -22,13 +23,7 @@
             background-color: #ddd;
         }
 
-        #customers th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            text-align: left;
-            background-color: #000000;
-            color: white;
-        }
+
     </style>
 </head>
 <body>
@@ -45,7 +40,23 @@
         <tr>
             <td><b></b></td>
             {% for cell in range((my_list|length)-1) %}
-                <td><b><INPUT TYPE="TEXT" NAME="name" SIZE="20"></b></td>
+                <td><b>
+                    <select>
+                        {%  if fillups[0][cell+1] is string %}
+                            <option value="contains">Contains</option>
+                            <option value="startsWith">Starts with</option>
+                            <option value="endsWith">Ends with</option>
+                        {%  endif %}
+                        {%  if fillups[0][cell+1] is number %}
+                            <option value="<">Less than</option>
+                            <option value=">">Greater than</option>
+                            <option value="=">Equal to</option>
+                            <option value=">=">Greater than or equal to</option>
+                            <option value="<=">Less than or equal to</option>
+                        {%  endif %}
+
+                    </select>
+                    <INPUT TYPE="TEXT" NAME="name" SIZE="10"></b></td>
             {% endfor %}
             <input type="submit" value="Submit">
         </tr>
