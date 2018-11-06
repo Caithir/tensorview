@@ -33,23 +33,23 @@
 </head>
 <body>
 <div class="container">
-    <h1>Table Name: {{ my_string }}</h1>
+    <h1>Table Name: {{ table_name }}</h1>
     <FORM METHOD="POST" ACTION="http://jkorpela.fi/cgi-bin/echo.cgi">
     <table id="customers">
         <tbody>
         <tr>
-            {% for cell in my_list %}
+            {% for cell in col_names %}
                 <td><b>{{ cell }}</b></td>
             {% endfor %}
         </tr>
         <tr>
             <td><b></b></td>
-            {% for cell in range((my_list|length)-1) %}
+            {% for cell in range((col_names|length)-1) %}
                 <td><b><INPUT TYPE="TEXT" NAME="name" SIZE="20"></b></td>
             {% endfor %}
             <input type="submit" value="Submit">
         </tr>
-        {% for row in fillups %}
+        {% for row in rows %}
             <tr>
                 {% for cell in row %}
                     <td>{{ cell }}</td>
