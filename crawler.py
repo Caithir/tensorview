@@ -39,6 +39,7 @@ def crawl(rootdir):
 
             # Add hyper parameters from directory name (pre-determined convention)
             hyperparams = _parse_dir(dirname)
+
             tags.update(hyperparams)
 
             # Add dependent parameters from tfevent protobuf as key and the most recent value
