@@ -4,6 +4,7 @@ from crawler import crawl
 conn = sqlite3.connect('Tensorview.db')
 c = conn.cursor()
 
+#TODO: Delete drop table statements
 # TEMP
 c.execute("drop table Experiment;")
 c.execute("drop table Run;")
@@ -91,6 +92,8 @@ for experiment in parameters:
             for (i, v) in enumerate(params['metric'][metric]):
                 c.execute("INSERT OR IGNORE INTO %s VALUES(%d, %d, %d, %s);" % (name, eid, rid, i, v))
 
+
+#TODO: delete all the printing stuff
 print("Experiment Table")
 for row in c.execute("SELECT * FROM Experiment;"):
     print(row)
