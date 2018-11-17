@@ -31,17 +31,20 @@ def crawl(rootdir):
         exp = _get_parent_name(dirname)
 
         for fname in filelist:
+            fpath = os.path.join(dirname, fname)
+            run = _get_parent_name(fpath)
+
             if exp not in parameters:
                 parameters[exp] = {}
 
-            fpath = os.path.join(dirname, fname)
-            tags = {}
+            params = {}
 
             # Add hyper parameters from directory name (pre-determined convention)
             hyperparams = _parse_dir(dirname)
 
-            tags.update(hyperparams)
+            params['hyper'] = hyperparams
 
+            tags = {}
             # Add dependent parameters from tfevent protobuf as key and the most recent value
             for e in tf.train.summary_iterator(fpath):
                 for v in e.summary.value:
@@ -49,6 +52,7 @@ def crawl(rootdir):
                         tags[v.tag] = []
                     tags[v.tag] += [v.simple_value]
 
-            parameters[exp][fname] = tags
+            params['metric'] = tags
+            parameters[exp][run] = params
 
     return parameters
