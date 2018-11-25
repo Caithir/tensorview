@@ -1,8 +1,12 @@
 import os
 import tensorflow as tf
 
+def _get_parent_name(dirpath):
+    parentdir = os.path.abspath(os.path.join(dirpath, os.pardir))
+    return os.path.basename(parentdir)
+
 # Convention: pname1-pval1_pname2-pval2_..._pnamen-pvaln
-def parse_dir(dirname):
+def _parse_dir(dirname):
     dirname = os.path.basename(dirname)
     pmap = {}
 
@@ -24,33 +28,31 @@ def crawl(rootdir):
     parameters = {}
 
     for dirname, subdirlist, filelist in os.walk(rootdir):
+        exp = _get_parent_name(dirname)
+
         for fname in filelist:
             fpath = os.path.join(dirname, fname)
-            tags = {}
+            run = _get_parent_name(fpath)
+
+            if exp not in parameters:
+                parameters[exp] = {}
+
+            params = {}
 
             # Add hyper parameters from directory name (pre-determined convention)
-            hyperparams = parse_dir(dirname)
-            tags.update(hyperparams)
+            hyperparams = _parse_dir(dirname)
 
+            params['hyper'] = hyperparams
+
+            tags = {}
             # Add dependent parameters from tfevent protobuf as key and the most recent value
             for e in tf.train.summary_iterator(fpath):
                 for v in e.summary.value:
-                    tags[v.tag] = v.simple_value
+                    if v.tag not in tags:
+                        tags[v.tag] = []
+                    tags[v.tag] += [v.simple_value]
 
-            parameters[fname] = tags
+            params['metric'] = tags
+            parameters[exp][run] = params
 
     return parameters
-
-# Temp
-def pretty_print(map):
-    def recurse(map, prefix):
-        if type(map) is dict:
-            for item in map:
-                print(prefix + item)
-                recurse(map[item], prefix + "  ")
-        else:
-            print(prefix + str(map))
-
-    recurse(map, "")
-
-pretty_print(crawl('./test_data'))
