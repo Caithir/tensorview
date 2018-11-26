@@ -63,7 +63,8 @@
     <FORM METHOD="POST" ACTION="http://facebook.com">
         <button class="submit submit1">Submit</button>
     </FORM>
-    <form action="#" method="post" class="Table_Body" id="table_body" action={{ url_for("/eid", **query_params) }}>
+    <form action="#" method="post" class="Table_Body" id="table_body" >
+{#    action={{ url_for("/eid", **query_params) }}#}
         <div id="table_rows">
 
             <table id="table">
@@ -97,8 +98,9 @@
                             </select>
                             <INPUT TYPE="TEXT" NAME="name" SIZE="10"></b></td>
                     {% endfor %}
-                    <td><b>
-                        <button id="go_button" onclick="updateRegex()">Go</button>
+                    <td>
+                        <b>
+
                     </b></td>
                 </tr>
                 {#        filling in the table#}
