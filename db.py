@@ -38,7 +38,7 @@ class Database(object):
         SELECT * FROM example''')
         return result_cursor
 
-    def run_query(self, table, contraints=tuple(['1', '=', '1'])):
+    def run_query(self, table, contraints=(['1', '=', '1'],)):
         query = f'''SELECT * FROM {table}
                     WHERE {"".join([str(param)+str(comp)+str(value)
                     for param, comp, value in contraints])}'''
