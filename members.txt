@@ -19,20 +19,30 @@ Colter:
     Attended meeting on visions for the project, including schema discussion and page layouts
     Researched project structure and project design. Came up with development stack.
     Wrote up project proposal and completed tutorials on how to use FLASK and SQLITE.
+    
+    I worked on a lot of the higher details of the project and helping out others with their portions as I had some previous web dev experience. Besides that my main contribution this milestone was getting the database classes up and running.
 
 Rachel:
     Attended meeting on visions for the project, including schema discussion and page layouts
     Heavily edited project proposal and completed tutorials on how to use FLASK and SQLITE.
+    
+    I worked with Shyam to design and implement a very basic interface using Python, Flask, Jinja2, and some basic components of CSS. Additionally, I planned and attended all of our team meetings to discuss allocation of work and further plan/implement our project. My next step is to continue working on the interface to make it cleaner and more robust as well as integrate the back end components to make it fully functional.
 
 Shyam:
     Attended the meeting on visions for the projects which involved deciding on how we would design the schema as well as what framework we would use for the project. 
     Further, found and shared tutorials on Flask and SQLite python for the rest of the group to complete.
+    
+     I worked with Rachel in order to help design and code up the front end of the project. We used Jinja2 in collaboration with python to complete a rough first draft of what the front end will look like. Additionally, I attended all the team meeting to discuss allocation of work as well as breakdown of our problem. We plan to start integrating the front end with some of the back end material soon.
 
 Christopher:
     Attended initial group meeting for the project, and completed tutorials on FLASK.
+     I worked on implementing an object relational mapper (ORM) using Flask and Python's SQLAlchemy. I collaborated on designing the overall schema for the project. I also attended all the meetings to discuss what each member has been working on, and plan out the work that needs to be done in the near future. I will be working on creating the tables and help integrate the front and back end.
+
 
 Raphael:
-    Attended meeting for the project. Completed tutorials on FLASK.
+    Attended meeting for the project. Completed tutorials on FLASK.\
+    I worked on implementing a crawler using python that will pick out the relevant hyperparameters/metric parameters from tensorboard to allow for a flexible construction of schemas. I helped with planning the overarching schema design which will be created using the information from crawler. Next, I plan on writing the code that will construct relevant tables via sqlite.
+
 
 
 
