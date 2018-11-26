@@ -11,32 +11,53 @@ class Database(object):
     def _cursor(self):
         return contextlib.closing(self._conn.cursor())
 
-    def parse_logdir_output(self, logdir_kwargs):
-        self.create_tables_from_logdir(logdir_kwargs)
+    def _parse_logdir_output(self, logdir_kwargs):
+        self.update_tables_from_logdir(logdir_kwargs)
         self.populate_tables_from_logdir(logdir_kwargs)
 
-    def create_tables_from_logdir(self, table_schema):
-        pass
+    def update_tables_from_logdir(self, experiments):
+        self.eids = {}
+        for eid, experiment_name, runs in enumerate(experiments.items()):
+            with self._cursor() as c:
+                self.eids[experiment_name] = eid
+                c.execute(f"INSERT OR IGNORE INTO Experiment VALUES({eid}, '{experiment_name}');")
+                for rid, run_name, params in enumerate(runs.items()):
+                    params['id'] = rid
+                    c.execute(f"INSERT OR IGNORE INTO Run VALUES({eid}, {rid}, '{run_name}');")
+                    c.execute("INSERT OR IGNORE INTO HyperParameter VALUES({eid}, {rid{)")
 
-    def populate_tables_from_logdir(self, logdir_kwargs):
-        pass
+    def populate_tables_from_logdir(self, experiments):
+        for experiment_name, runs in experiments.items():
+            eid = self.eids[experiment_name]
+            for run, params in runs.items():
+                rid = params['id']
+                with self._cursor() as c:
+                    # Hyper parameters
+                    for hyper in params['hyper']:
+                        col = [i[1] for i in c.execute("PRAGMA table_info(HyperParameter);")]
+                        # Type check
+                        is_str = isinstance(params['hyper'][hyper], str)
+                        str_format = "'" if is_str else ""
+                        if hyper not in col:
+                            c.execute(f"ALTER TABLE HyperParameter ADD {hyper} {'varchar(255)' if is_str else 'real'};")
+                            col += [hyper]
 
-    def create_hardcoded_table(self):
-        with self._cursor() as c:
-            c.execute('''\
-            CREATE TABLE IF NOT EXISTS EXAMPLE (
-            rid INTEGER PRIMARY KEY,
-            lr INTEGER,
-            arc STRING)
-            ''')
+                        c.execute(f"""UPDATE HyperParameter SET {hyper} = {str_format}{params['hyper'][hyper]}{str_format}
+                                      WHERE (eid = {eid} AND rid = {rid});""")
 
-            c.execute('''\
-            INSERT INTO EXAMPLE VALUES (1, 5, "res"), (2, 111, "MLP"), (4,111, "ERG")''')
+                    # Metric parameters
+                    # Metric tables are stored in "Metric_data_stuff" format
+                    for metric in params['metric']:
+                        name = "Metric_" + metric.replace('/', '_')
+                        c.execute(f'''CREATE TABLE IF NOT EXISTS {name} (
+                                     eid INTEGER NOT NULL REFERENCES Experiment (eid),
+                                     rid INTEGER NOT NULL REFERENCES Run (rid),
+                                     ind INTEGER NOT NULL,
+                                     val REAL NOT NULL,
+                                     PRIMARY KEY (eid, rid, ind));''')
 
-    def get_example(self):
-        result_cursor = self._conn.execute('''\
-        SELECT * FROM example''')
-        return result_cursor
+                        for (i, v) in enumerate(params['metric'][metric]):
+                            c.execute(f"INSERT OR IGNORE INTO {name} VALUES({eid}, {rid}, {i}, {v});")
 
     def run_query(self, table, contraints=(['1', '=', '1'],)):
         query = f'''SELECT * FROM {table}
@@ -44,6 +65,34 @@ class Database(object):
                     for param, comp, value in contraints])}'''
         return self._conn.execute(query)
 
+    def _create_experiment_table(self):
+        with self._cursor() as c:
+            c.execute('''CREATE TABLE IF NOT EXISTS Experiment (
+                         eid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                         name varchar(255) NOT NULL);''')
+
+    def _create_run_table(self):
+        with self._cursor() as c:
+            c.execute('''CREATE TABLE IF NOT EXISTS Run (
+                         eid INTEGER NOT NULL REFERENCES Experiment (eid),
+                         rid INTEGER NOT NULL,
+                         name varchar(255) NOT NULL,
+                         PRIMARY KEY (eid, rid));''')
+
+    def _create_hyperparameter_table(self):
+        with self._cursor() as c:
+            c.execute('''CREATE TABLE IF NOT EXISTS HyperParameter (
+                         eid INTEGER NOT NULL REFERENCES Experiment (eid),
+                         rid INTEGER NOT NULL REFERENCES Run (rid),
+                         PRIMARY KEY (eid, rid));''')
+
+    @classmethod
+    def build_database(cls, db_filename, experiments):
+        db = cls(db_filename)
+        db._create_experiment_table()
+        db._create_run_table()
+        db._create_hyperparameter_table()
+        db._parse_logdir_output(experiments)
 
 
 # This is a PEP 249 compliment database implementation
