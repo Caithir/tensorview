@@ -1,21 +1,17 @@
 from db import Database
-db_location = "spot.db"
-
+db_location = "example.db"
 
 class Table(object):
 
     def __init__(self, table_type, query):
         self.db = Database(db_location)
-        if table == "example":
-            print("making table")
-            self.db.create_hardcoded_table()
-            self.cur = self.db.get_example()
+        self._cur = self.db.run_query(table=query[0], contraints=query[1])
 
     @property
     def col_names(self):
-        return self.cur.description
+        return [name for name, *_ in self._cur.description]
 
     @property
     def rows(self):
-        return iter(self.cur)
+        return iter(self._cur)
 

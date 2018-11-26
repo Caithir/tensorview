@@ -7,14 +7,6 @@ app = Flask(__name__)
 
 
 
-# @app.route("/")
-def template_test():
-    kwargs = {"table_name":"Table 1",
-              'my_list':['   ','Col1', 'Col2', 'Col3', 'Col4'],
-              'fillups': [['Run1', 'test ', 'next'],['Run2','row2', 'row2.5'], ['row3'], ['row4']]}
-    return render_template('index.html', **kwargs)
-
-
 @app.route("/runs")
 def runs_in_experiment():
     request.args
@@ -29,6 +21,8 @@ def experiments():
         "col_names": t.col_names,
         "rows": t.rows
     }
+    return render_template('index.html', **template_args)
+
 
 
 def main():
