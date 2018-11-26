@@ -1,6 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from tables import Table
+from crawler import Crawler
+from db import Database
+
 app = Flask(__name__)
+
 
 
 # @app.route("/")
@@ -10,16 +14,27 @@ def template_test():
               'fillups': [['Run1', 'test ', 'next'],['Run2','row2', 'row2.5'], ['row3'], ['row4']]}
     return render_template('index.html', **kwargs)
 
+
+@app.route("/runs")
+def runs_in_experiment():
+    request.args
+    pass
+
 @app.route("/")
-def index():
-    t = Table("example")
+def experiments():
+    t = Table("Experiment")
 
     template = {
-        "table_name": "Temp example",
+        "table_name": "Experiments",
         "col_names": t.col_names,
         "rows": t.rows
     }
 
 
-if __name__ == '__main__':
+def main():
+    experiments = Crawler().crawl()
+    Database.build_database("example.sql", experiments)
     app.run(debug=True)
+
+if __name__ == '__main__':
+    main()

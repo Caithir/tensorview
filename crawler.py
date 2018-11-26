@@ -1,58 +1,59 @@
 import os
 import tensorflow as tf
+from collections import defaultdict
 
-def _get_parent_name(dirpath):
-    parentdir = os.path.abspath(os.path.join(dirpath, os.pardir))
-    return os.path.basename(parentdir)
 
-# Convention: pname1-pval1_pname2-pval2_..._pnamen-pvaln
-def _parse_dir(dirname):
-    dirname = os.path.basename(dirname)
-    pmap = {}
+class Crawler:
+    def __init__(self):
+        pass
 
-    params = dirname.split('_')
-    for p in params:
-        p = p.split('-')
-        pname, pval = p[0], p[1]
-        # Convert to float if applicable
-        try:
-            pval = float(pval)
-        except:
-            pass
-        pmap[pname] = pval
+    def _get_parent_name(self, dirpath):
+        parentdir = os.path.abspath(os.path.join(dirpath, os.pardir))
+        return os.path.basename(parentdir)
 
-    return pmap
+    # Convention: pname1-pval1_pname2-pval2_..._pnamen-pvaln
+    def _parse_dir(self, dirname):
+        dirname = os.path.basename(dirname)
+        pmap = {}
 
-# Crawl through training data to extract relevant parameter names
-def crawl(rootdir):
-    parameters = {}
+        params = dirname.split('_')
+        for p in params:
+            p = p.split('-')
+            pname, pval = p[0], p[1]
+            # Convert to float if applicable
+            try:
+                pval = float(pval)
+            except:
+                pass
+            pmap[pname] = pval
 
-    for dirname, subdirlist, filelist in os.walk(rootdir):
-        exp = _get_parent_name(dirname)
+        return pmap
 
-        for fname in filelist:
-            fpath = os.path.join(dirname, fname)
-            run = _get_parent_name(fpath)
+    # Crawl through training data to extract relevant parameter names
+    def crawl(self, rootdir):
+        experiments = defaultdict(dict)
 
-            if exp not in parameters:
-                parameters[exp] = {}
+        for dirname, subdirlist, filelist in os.walk(rootdir):
+            exp = self._get_parent_name(dirname)
 
-            params = {}
+            for fname in filelist:
+                fpath = os.path.join(dirname, fname)
+                run = self._get_parent_name(fpath)
 
-            # Add hyper parameters from directory name (pre-determined convention)
-            hyperparams = _parse_dir(dirname)
+                params = {}
 
-            params['hyper'] = hyperparams
+                # Add hyper parameters from directory name (pre-determined convention)
+                hyperparams = self._parse_dir(dirname)
 
-            tags = {}
-            # Add dependent parameters from tfevent protobuf as key and the most recent value
-            for e in tf.train.summary_iterator(fpath):
-                for v in e.summary.value:
-                    if v.tag not in tags:
-                        tags[v.tag] = []
-                    tags[v.tag] += [v.simple_value]
+                params['hyper'] = hyperparams
 
-            params['metric'] = tags
-            parameters[exp][run] = params
+                tags = defaultdict(list)
+                # Add dependent parameters from tfevent protobuf as key and the most recent value
+                for e in tf.train.summary_iterator(fpath):
+                    for v in e.summary.value:
+                        tags[v.tag].extend(v.simple_value)
 
-    return parameters
+                params['metric'] = tags
+                experiments[exp][run] = params
+
+        return experiments
