@@ -2,24 +2,24 @@
 <html>
 
 <head>
-    <title>Flask Template Example</title>
+    <title>TensorView</title>
     <style>
-        #customers {
+        #table {
             font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
             border-collapse: collapse;
             width: 30%;
         }
 
-        #customers td, #customers th {
+        #table td, #table th {
             border: 2px solid #ddd;
             padding: 6px;
         }
 
-        #customers tr:nth-child(even) {
+        #table tr:nth-child(even) {
             background-color: #F1F3FF;
         }
 
-        #customers tr:hover {
+        #table tr:hover {
             background-color: #ddd;
         }
         .submit {
@@ -59,72 +59,127 @@
 </head>
 <body>
 <div class="container">
-    <h1>Table Name: {{ my_string }}</h1>
-    {#  <FORM METHOD="POST" ACTION="http://jkorpela.fi/cgi-bin/echo.cgi">#}
-    <FORM METHOD="POST" ACTION="http://google.com">
+    <h1>Table Name: {{ table_name }}</h1>
+    <FORM METHOD="POST" ACTION="http://facebook.com">
         <button class="submit submit1">Submit</button>
     </FORM>
-    <table id="customers">
-        <tbody>
-        <tr>
-            {% for cell in my_list %}
-                <td><b>{{ cell }}</b></td>
-            {% endfor %}
-            <td><b>{{ "Graph?"}}</b></td>
-        </tr>
-        <tr>
-            <td><b></b></td>
-            {% for cell in range((my_list|length)-1) %}
-                <td><b>
-                    <select>
-                        {%  if fillups[0][cell+1] is string %}
-                            <option value="contains">Contains</option>
-                            <option value="startsWith">Starts with</option>
-                            <option value="endsWith">Ends with</option>
-                        {%  endif %}
-                        {%  if fillups[0][cell+1] is number %}
-                            <option value="<">Less than</option>
-                            <option value=">">Greater than</option>
-                            <option value="=">Equal to</option>
-                            <option value=">=">Greater than or equal to</option>
-                            <option value="<=">Less than or equal to</option>
-                        {%  endif %}
+    <form action="#" method="post" class="Table_Body" id="table_body" action={{ url_for("/eid", **query_params) }}>
+        <div id="table_rows">
 
-                    </select>
-                    <INPUT TYPE="TEXT" NAME="name" SIZE="10"></b></td>
-            {% endfor %}
-            <td><b>
-                <button id="go_button" onclick="myFunction()">Go</button>
-            </b></td>
-        </tr>
-        {% for row in fillups %}
-            <tr>
-                {% for cell in row %}
-                    <td>{{ cell }}</td>
+            <table id="table">
+                <tbody>
+                {# building the headings of the table #}
+                <tr>
+                    {% for cell in headings %}
+                        <td><b>{{ cell }}</b></td>
+                    {% endfor %}
+                    <td><b>{{ "Graph?"}}</b></td>
+                </tr>
+                {# making the drop downs for the query selection#}
+                <tr>
+                    <td><b></b></td>
+                    {% for cell in range((headings|length)-1) %}
+                        <td><b>
+                            <select>
+                                {%  if table_contents[0][cell+1] is string %}
+                                    <option value="contains">Contains</option>
+                                    <option value="startsWith">Starts with</option>
+                                    <option value="endsWith">Ends with</option>
+                                {%  endif %}
+                                {%  if table_contents[0][cell+1] is number %}
+                                    <option value="<">Less than</option>
+                                    <option value=">">Greater than</option>
+                                    <option value="=">Equal to</option>
+                                    <option value=">=">Greater than or equal to</option>
+                                    <option value="<=">Less than or equal to</option>
+                                {%  endif %}
+                                {#            This is where we will do the query string for the sql queries#}
+                            </select>
+                            <INPUT TYPE="TEXT" NAME="name" SIZE="10"></b></td>
+                    {% endfor %}
+                    <td><b>
+                        <button id="go_button" onclick="updateRegex()">Go</button>
+                    </b></td>
+                </tr>
+                {#        filling in the table#}
+                {% for row in table_contents %}
+                    <tr>
+
+                        {% for cell in range((row|length)) %}
+                            <td>{{ row[cell] }}</td>
+                        {% endfor %}
+                        <td><label><input type="checkbox" value={{ row[0] }} /> </label> </td>
+                    </tr>
                 {% endfor %}
-                <td><input type="checkbox" />    &nbsp;   </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                <p>
+                    <label>Regex: <input type="text" name ="regex" value="()" readonly="readonly" /> </label>
+                </p>
+
+                </tbody>
+            </table>
+        </div>
+    </form>
 </div>
+
 </body>
 <br>
 <br>
-<div id="myDIV">Hello</div>
-{#now need to change the hello command to be the regex function based on which files were selected#}
-<script>
-    function myFunction() {
-        var x = document.getElementById("myDIV");
-        if (x.innerHTML === "Hello") {
-            x.innerHTML = "Swapped text!";
-        } else {
-            x.innerHTML = "Hello";
-        }
-    }
-</script>
+
 </html>
 
+<script>
+    function attachCheckboxHandlers() {
+        // get reference to element containing toppings checkboxes
+        var el = document.getElementById('table_rows');
+
+        // get reference to input elements in toppings container element
+        var tops = el.getElementsByTagName('input');
+
+        // assign updateTotal function to onclick property of each checkbox
+        for (var i=0, len=tops.length; i<len; i++) {
+            if ( tops[i].type === 'checkbox' ) {
+                tops[i].onclick = updateRegex;
+            }
+        }
+    }
+
+    function updateRegex() {
+        // 'this' is reference to checkbox clicked on
+        var form = this.form;
+
+        // get current value in total text box, using parseFloat since it is a string
+        var currentRegex = form.elements['regex'].value;
+        var namesWithPipes = currentRegex.substring(1, currentRegex.length-1);
+        if ("()" === currentRegex){
+            form.elements['regex'].value = "("+this.value+")";
+            return;
+        }
+
+        var arr = namesWithPipes.split("|");
+        // if check box is checked, add its value to val, otherwise subtract it
+        if ( this.checked ) {
+            arr.push(this.value);
+        } else {
+            var ind = arr.indexOf((this.value));
+            if(ind !== -1){
+                arr.splice(ind,1);
+            }
+        }
+
+        form.elements['regex'].value = "("+arr.join("|")+")";
+    }
+
+    attachCheckboxHandlers();
+
+
+</script>
 
 {#code for syling used from here#}
 {#https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy#}
+
+
+{#https://stackoverflow.com/questions/32516455/how-to-create-url-according-to-the-checked-checkboxes#}
+{#https://stackoverflow.com/questions/22505825/creating-string-of-checkbox-ids-if-checked#}
+{#https://coderwall.com/p/pkthoa/read-checkbox-in-flask#}
+{#https://gist.github.com/devdave/1472832#}
+{#https://www.dyn-web.com/tutorials/forms/checkbox/group.php#}
