@@ -3,10 +3,33 @@ import sqlite3
 from collections import namedtuple
 
 
+class Query(namedtuple('param', 'comparator', 'value')):
+    def __repr__(self):
+        return str(self.param)+str(self.comparatpr)+str(self.value)
+
+    def __str__(self):
+        return str(self.param)+str(self.comparatpr)+str(self.value)
+
 class Database(object):
 
-    def __init__(self, db_filename):
-        self._conn = Connection(sqlite3.connect(db_filename))
+    def __init__(self):
+        # You need to call the build database function before you can make instances of it
+        self._conn = Connection(sqlite3.connect(self.db_filename))
+
+    @classmethod
+    def build_database(cls, db_filename, experiments):
+        db = cls(db_filename)
+        db._create_experiment_table()
+        db._create_run_table()
+        db._create_hyperparameter_table()
+        db._parse_logdir_output(experiments)
+        setattr(Database, "db_name", db_filename)
+
+    def run_query(self, table, constraints=(Query('1', '=', '1'),)):
+        query = f'''SELECT * FROM {table}
+                    WHERE {"and".join([str(query)
+                    for query in constraints])[3:]}'''
+        return self._conn.execute(query)
 
     def _cursor(self):
         return contextlib.closing(self._conn.cursor())
@@ -59,12 +82,6 @@ class Database(object):
                         for (i, v) in enumerate(params['metric'][metric]):
                             c.execute(f"INSERT OR IGNORE INTO {name} VALUES({eid}, {rid}, {i}, {v});")
 
-    def run_query(self, table, contraints=(['1', '=', '1'],)):
-        query = f'''SELECT * FROM {table}
-                    WHERE {"".join([str(param)+str(comp)+str(value)
-                    for param, comp, value in contraints])}'''
-        return self._conn.execute(query)
-
     def _create_experiment_table(self):
         with self._cursor() as c:
             c.execute('''CREATE TABLE IF NOT EXISTS Experiment (
@@ -86,13 +103,7 @@ class Database(object):
                          rid INTEGER NOT NULL REFERENCES Run (rid),
                          PRIMARY KEY (eid, rid));''')
 
-    @classmethod
-    def build_database(cls, db_filename, experiments):
-        db = cls(db_filename)
-        db._create_experiment_table()
-        db._create_run_table()
-        db._create_hyperparameter_table()
-        db._parse_logdir_output(experiments)
+
 
 
 # This is a PEP 249 compliment database implementation
