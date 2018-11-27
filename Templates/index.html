@@ -3,6 +3,7 @@
 
 <head>
     <title>TensorView</title>
+    <link rel="icon" type="image/png" href="/static/favicon.ico">
     <style>
         #table {
             font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -60,13 +61,11 @@
 <body>
 <div class="container">
     <h1>Table Name: {{ table_name }}</h1>
-{#    <FORM METHOD="POST" ACTION="http://facebook.com">#}
-{#        <button class="submit submit1">Submit</button>#}
-{#    </FORM>#}
+
     {%  set querey_params = {} %}
     <form action="#" method="post" class="Table_Body" id="table_body" >
 {#    action={{ url_for("/", **query_params) }}#}
-        <button class="submit submit1">Submit</button>
+        <button class="submit submit1" onclick="getOption()">Submit</button>
 
         <div id="table_rows">
 
@@ -84,13 +83,15 @@
                     <td><b></b></td>
                     {% for cell in range((headings|length)-1) %}
                         <td><b>
-                            <select>
+                            <select id = "drop_down_select">
                                 {%  if table_contents[0][cell+1] is string %}
+                                    <option value=" "> </option>
                                     <option value="contains">Contains</option>
                                     <option value="startsWith">Starts with</option>
                                     <option value="endsWith">Ends with</option>
                                 {%  endif %}
                                 {%  if table_contents[0][cell+1] is number %}
+                                    <option value=" "> </option>
                                     <option value="<">Less than</option>
                                     <option value=">">Greater than</option>
                                     <option value="=">Equal to</option>
@@ -99,7 +100,15 @@
                                 {%  endif %}
                                 {#            This is where we will do the query string for the sql queries#}
                             </select>
-                            <INPUT TYPE="TEXT" NAME="name" SIZE="10"></b></td>
+                            <INPUT TYPE="TEXT" NAME="name" SIZE="10" id='user_input'></b></td>
+                        {% set my_string = results.user_input %}
+{#                        {% set my_string = ret + stuff.id + ', '%}#}
+{#                        <p> {{getOption()}}</p>#}
+                        {% if "{{ headings[cell] }}" not in query_params %}
+{#                                       CONCAT of drop down selection + _ + user input  #}
+{#                                          add entry to the map query_params           #}
+                            {% do querey_params["{{ headings[cell] }}"]= my_string %}
+                        {% endif %}
                     {% endfor %}
                     <td>
                         <b>
@@ -134,6 +143,7 @@
 </html>
 
 <script>
+
     function attachCheckboxHandlers() {
         // get reference to element containing toppings checkboxes
         var el = document.getElementById('table_rows');
@@ -182,6 +192,16 @@
         copyText.select();
         document.execCommand("copy");
         alert("Copied the text: " + copyText.value + " to clipboard.")
+    }
+
+    function getOption(){
+        console.log("Anna");
+        var opt = document.getElementById("drop_down_select");
+        var e = document.getElementById("user_input").value;
+        var strOption = opt.options[e.selectedIndex].value;
+        var j = strOption.concat("_");
+        var ret = j.concat(e);
+        console.log(ret);
     }
 
 </script>
