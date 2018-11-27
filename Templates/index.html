@@ -60,11 +60,14 @@
 <body>
 <div class="container">
     <h1>Table Name: {{ table_name }}</h1>
-    <FORM METHOD="POST" ACTION="http://facebook.com">
-        <button class="submit submit1">Submit</button>
-    </FORM>
+{#    <FORM METHOD="POST" ACTION="http://facebook.com">#}
+{#        <button class="submit submit1">Submit</button>#}
+{#    </FORM>#}
+    {%  set querey_params = {} %}
     <form action="#" method="post" class="Table_Body" id="table_body" >
-{#    action={{ url_for("/eid", **query_params) }}#}
+{#    action={{ url_for("/", **query_params) }}#}
+        <button class="submit submit1">Submit</button>
+
         <div id="table_rows">
 
             <table id="table">
@@ -114,7 +117,8 @@
                     </tr>
                 {% endfor %}
                 <p>
-                    <label>Regex: <input type="text" name ="regex" value="()" readonly="readonly" /> </label>
+                    <label>Regex: <input type="text" name ="regex" value="()" readonly="readonly" id="regInput"/> </label>
+                    <button onclick="copyReg()">Copy Regex</button>
                 </p>
 
                 </tbody>
@@ -173,6 +177,12 @@
 
     attachCheckboxHandlers();
 
+    function copyReg(){
+        var copyText = document.getElementById("regInput");
+        copyText.select();
+        document.execCommand("copy");
+        alert("Copied the text: " + copyText.value + " to clipboard.")
+    }
 
 </script>
 
