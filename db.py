@@ -3,33 +3,53 @@ import sqlite3
 from collections import namedtuple
 
 
-class Query(namedtuple('param', 'comparator', 'value')):
+class Query(namedtuple('Query', ('param', 'comparator', 'value'))):
     def __repr__(self):
-        return str(self.param)+str(self.comparatpr)+str(self.value)
+        return str(self.param)+str(self.comparator)+str(self.value)
 
     def __str__(self):
-        return str(self.param)+str(self.comparatpr)+str(self.value)
+        return str(self.param)+str(self.comparator)+str(self.value)
 
 class Database(object):
 
     def __init__(self):
         # You need to call the build database function before you can make instances of it
-        self._conn = Connection(sqlite3.connect(self.db_filename))
+        self._conn = Connection(sqlite3.connect(self.db_name))
 
     @classmethod
-    def build_database(cls, db_filename, experiments):
-        db = cls(db_filename)
-        db._create_experiment_table()
-        db._create_run_table()
-        db._create_hyperparameter_table()
-        db._parse_logdir_output(experiments)
+    def build_database(cls, db_filename, experiments, rebuild=True):
         setattr(Database, "db_name", db_filename)
+        if rebuild:
+            db = cls()
+            db._create_experiment_table()
+            db._create_run_table()
+            db._create_hyperparameter_table()
+            db._parse_logdir_output(experiments)
 
-    def run_query(self, table, constraints=(Query('1', '=', '1'),)):
-        query = f'''SELECT * FROM {table}
-                    WHERE {"and".join([str(query)
-                    for query in constraints])[3:]}'''
-        return self._conn.execute(query)
+    def run_query(self, table, query=None, order_by=None):
+        if not query:
+            query = (Query('1', '=', '1'),)
+        if not order_by:
+            order_by = 'rid'
+        sql_query = f'''SELECT * FROM {table}
+                    WHERE {" and ".join([str(query)
+                    for query in query])}
+                    order by {order_by}'''
+        return self._conn.execute(sql_query)
+
+    def metric_aggregate(self, eid,  num_values, query=None, order_by=None):
+        if not query:
+            query = (Query('1', '=', '1'),)
+        if not order_by:
+            order_by = 'rid'
+        sql_query = f'''SELECT rid, avg_val
+                        FROM (SELECT rid, AVG(val) avg_val
+                              FROM Metric_{query.param}
+                              WHERE eid = {eid}
+                              GROUP BY rid)
+                        WHERE avg_val {query.comparator} {query.value}
+                        ORDER BY {order_by}'''
+        return self._conn.execute(sql_query)
 
     def _cursor(self):
         return contextlib.closing(self._conn.cursor())
@@ -40,21 +60,21 @@ class Database(object):
 
     def update_tables_from_logdir(self, experiments):
         self.eids = {}
-        for eid, experiment_name, runs in enumerate(experiments.items()):
+        for eid, (experiment_name, runs) in enumerate(experiments.items()):
             with self._cursor() as c:
                 self.eids[experiment_name] = eid
                 c.execute(f"INSERT OR IGNORE INTO Experiment VALUES({eid}, '{experiment_name}');")
-                for rid, run_name, params in enumerate(runs.items()):
+                for rid, (run_name, params) in enumerate(runs.items()):
                     params['id'] = rid
                     c.execute(f"INSERT OR IGNORE INTO Run VALUES({eid}, {rid}, '{run_name}');")
-                    c.execute("INSERT OR IGNORE INTO HyperParameter VALUES({eid}, {rid{)")
+                    c.execute(f"INSERT OR IGNORE INTO HyperParameter (eid, rid) VALUES({eid}, {rid})")
 
     def populate_tables_from_logdir(self, experiments):
         for experiment_name, runs in experiments.items():
             eid = self.eids[experiment_name]
             for run, params in runs.items():
                 rid = params['id']
-                with self._cursor() as c:
+                with self._conn as c:
                     # Hyper parameters
                     for hyper in params['hyper']:
                         col = [i[1] for i in c.execute("PRAGMA table_info(HyperParameter);")]

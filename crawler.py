@@ -4,8 +4,6 @@ from collections import defaultdict
 
 
 class Crawler:
-    def __init__(self):
-        pass
 
     def _get_parent_name(self, dirpath):
         parentdir = os.path.abspath(os.path.join(dirpath, os.pardir))
@@ -51,7 +49,7 @@ class Crawler:
                 # Add dependent parameters from tfevent protobuf as key and the most recent value
                 for e in tf.train.summary_iterator(fpath):
                     for v in e.summary.value:
-                        tags[v.tag].extend(v.simple_value)
+                        tags[v.tag].append(v.simple_value)
 
                 params['metric'] = tags
                 experiments[exp][run] = params
