@@ -5,7 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
-
+.idea/tensorview.iml
+.idea/vcms.xml
+.idea/misc.xml
+.idea/modules.xml
 # Distribution / packaging
 .Python
 build/
