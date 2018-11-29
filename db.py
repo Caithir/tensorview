@@ -20,6 +20,7 @@ class Database(object):
     def build_database(cls, db_filename, experiments, rebuild=True):
         setattr(Database, "db_name", db_filename)
         if rebuild:
+            print("rebuilt")
             db = cls()
             db._create_experiment_table()
             db._create_run_table()
@@ -29,12 +30,10 @@ class Database(object):
     def run_query(self, table, query=None, order_by=None):
         if not query:
             query = (Query('1', '=', '1'),)
-        if not order_by:
-            order_by = 'rid'
         sql_query = f'''SELECT * FROM {table}
                     WHERE {" and ".join([str(query)
                     for query in query])}
-                    order by {order_by}'''
+                    '''
         return self._conn.execute(sql_query)
 
     def metric_aggregate(self, eid,  num_values, query=None, order_by=None):

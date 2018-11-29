@@ -16,8 +16,8 @@ def runs_in_experiment(eid, hyperparameter_queries, metric_queries):
 
     template_args = {
         "table_name": "Runs",
-        "col_names": t.col_names,
-        "rows": t.rows
+        "headings": t.col_names,
+        "table_contents": list(t.rows)
     }
     return render_template('index.html', **template_args)
 
@@ -27,8 +27,8 @@ def experiments():
 
     template_args = {
         "table_name": "Experiments",
-        "col_names": t.col_names,
-        "rows": t.rows
+        "headings": t.col_names,
+        "table_contents": list(t.rows)
     }
     return render_template('index.html', **template_args)
 
@@ -39,8 +39,8 @@ def main():
     db_name = "tensorview.db"
     logdir = './test_data'
     port = 6886
-    update = False
-    experiments ={}
+    update = True
+    experiments = {}
     if update:
         experiments = Crawler().crawl(logdir)
     Database.build_database(db_name, experiments, rebuild=update)
