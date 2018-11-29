@@ -17,7 +17,9 @@ def runs_in_experiment(eid, hyperparameter_queries, metric_queries):
     template_args = {
         "table_name": "Runs",
         "headings": t.col_names,
-        "table_contents": list(t.rows)
+        "table_contents": list(t.rows),
+        "num_hyper_params": 4,
+        "number_of_cols": len(t.col_names),
     }
     return render_template('index.html', **template_args)
 
@@ -36,6 +38,7 @@ def experiments():
 
 def main():
     # will have to do some argparse stuff here to get log dir and the port
+    # logdir and port come from command line
     db_name = "tensorview.db"
     logdir = './test_data'
     port = 6886

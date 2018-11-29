@@ -59,9 +59,10 @@
 </head>
 <body>
 <div class="container">
+{#    <meta data-name="{{ num_hyper_params }}" id ="num_hyper_params">#}
+{#    <meta data-name="{{ number_of_cols }}" id ="number_of_cols">#}
     <h1>{{ table_name }}</h1>
 
-{#    {%  set querey_params = {} %}#}
     <button class="submit submit1" onclick="getOption()">Submit</button>
     <form class="Table_Body" id="table_body" >
 
@@ -72,33 +73,34 @@
                 {# building the headings of the table #}
                 <tr>
                     {% for cell in headings %}
-                        <td><b>{{ cell }}</b></td>
+                        <td><b id="heading_{{ loop.index -1 }}" value="{{ cell }}">{{ cell }}</b></td>
                     {% endfor %}
                     <td><b>{{ "Graph?"}}</b></td>
                 </tr>
                 {# making the drop downs for the query selection#}
                 <tr>
-                    <td><b></b></td>
-                    {% for cell in range((headings|length)-1) %}
-                        <td><b>
-                            <select id = "drop_down_select">
-                                {%  if table_contents[0][cell+1] is string %}
-                                    <option value=" "> </option>
-                                    <option value="contains">Contains</option>
-                                    <option value="startsWith">Starts with</option>
-                                    <option value="endsWith">Ends with</option>
-                                {%  endif %}
-                                {%  if table_contents[0][cell+1] is number %}
-                                    <option value=" "></option>
-                                    <option value="<"> < </option>
-                                    <option value=">"> > </option>
-                                    <option value="="> = </option>
-                                    <option value=">="> >= </option>
-                                    <option value="<="> <= </option>
-                                {%  endif %}
-                                {#            This is where we will do the query string for the sql queries#}
-                            </select>
-                            <INPUT TYPE="TEXT" NAME={{ cell }} SIZE="10" id='user_input'></b></td>
+                    {% for cell in range((headings|length)) %}
+
+                            <td><b>
+                                <select id = "drop_down_select_{{ cell }}">
+                                    {%  if table_contents[0][cell] is string %}
+                                        <option value=" "> </option>
+                                        <option value="contains">Contains</option>
+                                        <option value="startsWith">Starts with</option>
+                                        <option value="endsWith">Ends with</option>
+                                    {%  endif %}
+                                    {%  if table_contents[0][cell] is number %}
+                                        <option value=" "></option>
+                                        <option value="<"> < </option>
+                                        <option value=">"> > </option>
+                                        <option value="="> = </option>
+                                        <option value=">="> >= </option>
+                                        <option value="<="> <= </option>
+                                    {%  endif %}
+                                    {#            This is where we will do the query string for the sql queries#}
+                                </select>
+                                <INPUT TYPE="TEXT" NAME={{ cell }} SIZE="10" id='user_input_{{ cell }}'></b></td>
+
 
                     {% endfor %}
                     <td>
@@ -107,13 +109,17 @@
                     </b></td>
                 </tr>
                 {#        filling in the table#}
-                {% for row in table_contents %}
+                {% for  row in table_contents %}
                     <tr>
-
                         {% for cell in range((row|length)) %}
-                            <td>{{ row[cell] }}</td>
+                           {%  if table_contents[0][cell] is number %}
+
+                                <td>{{ '%0.4f' % row[cell]|float  }}</td>
+                            {%  else %}
+                                <td>{{ row[cell] }}</td>
+                            {%  endif %}
                         {% endfor %}
-                        <td><label><input type="checkbox" value={{ row[0] }} /> </label> </td>
+                        <td><label><input type="checkbox" value={{ row|join('_') }} /> </label> </td>
                     </tr>
                 {% endfor %}
                 <p>
@@ -185,15 +191,37 @@
     }
 
     function getOption(){
+        var sep_string =">.<";
+        // get reference to element containing toppings checkboxes
+        var el = document.getElementById('table_rows');
+        // get reference to input elements in toppings container element
+        var tops = el.getElementsByTagName('input');
+        var new_url = "";
+        // assign updateTotal function to onclick property of each checkbox
+        {#var num_cols= parseInt(document.getElementById('number_of_cols').value, 10);#}
+        {#var num_cols = $('#number_of_cols').data()#}
+        {#var num_cols = ;#}
+        {#var col_names = {{ col_names }}#}
 
-        var opt = document.getElementById("drop_down_select");
-        var e = document.getElementById("user_input").value;
-        console.log(opt)
-        console.log(e)
-        {#var strOption = opt.options[e.selectedIndex].value;#}
-        {#var j = strOption.concat("_");#}
-        {#var ret = j.concat(e);#}
-        {#console.log(ret)#}
+        for (var i=0; i <{{ number_of_cols }}; i++) {
+
+            //selected comparator
+            var opt = document.getElementById("drop_down_select_" + i);
+            var strOption = opt.value;
+            // input val
+            var e = document.getElementById("user_input_" + i).value;
+
+            // param compared against
+            var col_name = {{ col_names }}[i];
+
+            new_url.concat(col_name.value + sep_string + strOption + sep_string + e);
+
+            if (i < {{ num_hyper_params }}) {
+                new_url.concat("/");
+            }
+        }
+        console.window = new_url;
+
 
     }
 

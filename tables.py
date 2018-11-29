@@ -43,7 +43,8 @@ class RunTable(TableI):
         # # inner list comp will return rid, metric
         # metric_col_names = [[name for name, *_ in cur][1] for cur in self.metrics_curs]
         metric_col_names = [q.param for q in self.metrics_queries]
-        col_names = hyperparams_col_names[:]
+        # the first two col names are eid and rid, dont want these in table
+        col_names = hyperparams_col_names[2:]
         col_names.extend(metric_col_names)
         return col_names
 
@@ -56,7 +57,8 @@ class RunTable(TableI):
         # NOTE RID is the second item in the schema if schema changes this breaks
         for hyper_row in self.hyperparameters.rows:
             hyper_row = list(hyper_row)
-            rids[hyper_row[1]] = hyper_row
+            # do not include the eid and rid
+            rids[hyper_row[1]] = hyper_row[2:]
 
         # NOTE RID is first index since the metric query only has rid and avg_val
         for metric_cur in self.metrics_curs:
