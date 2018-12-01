@@ -5,27 +5,43 @@ from collections import namedtuple
 
 class Query(namedtuple('Query', ('param', 'comparator', 'value'))):
     def __repr__(self):
-        return str(self.param)+str(self.comparator)+str(self.value)
+        return str(self)
 
     def __str__(self):
-        return str(self.param)+str(self.comparator)+str(self.value)
+        return f'{self.param} {self.comparator} {self.value}'
+
+
+
+
 
 class Database(object):
 
     def __init__(self):
         # You need to call the build database function before you can make instances of it
         self._conn = Connection(sqlite3.connect(self.db_name))
+        self.eids = {}
 
     @classmethod
     def build_database(cls, db_filename, experiments, rebuild=True):
-        setattr(Database, "db_name", db_filename)
-        if rebuild:
-            print("rebuilt")
-            db = cls()
-            db._create_experiment_table()
-            db._create_run_table()
-            db._create_hyperparameter_table()
-            db._parse_logdir_output(experiments)
+        setattr(cls, "db_name", db_filename)
+        db = cls()
+        db._create_experiment_table()
+        db._create_run_table()
+        db._create_hyperparameter_table()
+        db._parse_logdir_output(experiments)
+        db._set_experiment_hyperparams(experiments)
+
+
+
+    def _set_experiment_hyperparams(self, experiments):
+        exp_hypers = {}
+        for exp, runs in experiments.items():
+            eid = self.eids[exp]
+            exp_hypers[eid] = [x.replace('/', '_') for x in list(runs.values())[0]['metric'].keys()]
+
+        setattr(Database, "experiment_hypers", exp_hypers)
+
+
 
     def run_query(self, table, query=None, order_by=None):
         if not query:
@@ -34,20 +50,18 @@ class Database(object):
                     WHERE {" and ".join([str(query)
                     for query in query])}
                     '''
+        print(sql_query)
         return self._conn.execute(sql_query)
 
-    def metric_aggregate(self, eid,  num_values, query=None, order_by=None):
-        if not query:
-            query = (Query('1', '=', '1'),)
-        if not order_by:
-            order_by = 'rid'
+    def metric_aggregate(self, eid,  num_values, query, order_by=None):
+
         sql_query = f'''SELECT rid, avg_val
                         FROM (SELECT rid, AVG(val) avg_val
                               FROM Metric_{query.param}
                               WHERE eid = {eid}
                               GROUP BY rid)
                         WHERE avg_val {query.comparator} {query.value}
-                        ORDER BY {order_by}'''
+                        '''
         return self._conn.execute(sql_query)
 
     def _cursor(self):
@@ -58,7 +72,7 @@ class Database(object):
         self.populate_tables_from_logdir(logdir_kwargs)
 
     def update_tables_from_logdir(self, experiments):
-        self.eids = {}
+
         for eid, (experiment_name, runs) in enumerate(experiments.items()):
             with self._cursor() as c:
                 self.eids[experiment_name] = eid

@@ -22,6 +22,7 @@
         #table tr:hover {
             background-color: #ddd;
         }
+
         .submit {
             background-color: #98fb98; /* Green */
             border: none;
@@ -43,6 +44,7 @@
             color: black;
             border: 2px solid #98fb98;
         }
+
         .submit1:hover {
             background-color: #98fb98;
             color: white;
@@ -59,12 +61,11 @@
 </head>
 <body>
 <div class="container">
-{#    <meta data-name="{{ num_hyper_params }}" id ="num_hyper_params">#}
-{#    <meta data-name="{{ number_of_cols }}" id ="number_of_cols">#}
+
     <h1>{{ table_name }}</h1>
 
-    <button class="submit submit1" onclick="getOption()">Submit</button>
-    <form class="Table_Body" id="table_body" >
+    <button class="submit submit1" onclick="queryredirect()">Submit</button>
+    <form class="Table_Body" id="table_body">
 
         <div id="table_rows">
 
@@ -73,57 +74,67 @@
                 {# building the headings of the table #}
                 <tr>
                     {% for cell in headings %}
-                        <td><b id="heading_{{ loop.index -1 }}" value="{{ cell }}">{{ cell }}</b></td>
+                        {%  if loop.index > 1  %}
+                        <td><b id="heading_{{ loop.index -2 }}" value="{{ cell }}">{{ cell }}</b></td>
+                        {% endif %}
                     {% endfor %}
-                    <td><b>{{ "Graph?"}}</b></td>
+                    <td><b>{{ "Graph?" }}</b></td>
                 </tr>
                 {# making the drop downs for the query selection#}
                 <tr>
                     {% for cell in range((headings|length)) %}
+                        {% if loop.index > 1 %}
+                        <td><b>
+                            <select id="drop_down_select_{{ cell }}">
 
-                            <td><b>
-                                <select id = "drop_down_select_{{ cell }}">
-                                    {%  if table_contents[0][cell] is string %}
-                                        <option value=" "> </option>
+                                {% if (table_contents|length) > 0 %}
+                                    {% if table_contents[0][cell] is string %}
+                                        <option value=" "></option>
                                         <option value="contains">Contains</option>
                                         <option value="startsWith">Starts with</option>
                                         <option value="endsWith">Ends with</option>
-                                    {%  endif %}
-                                    {%  if table_contents[0][cell] is number %}
+                                        <option value="exact">Exact</option>
+
+                                    {% endif %}
+                                    {% if table_contents[0][cell] is number %}
                                         <option value=" "></option>
-                                        <option value="<"> < </option>
-                                        <option value=">"> > </option>
-                                        <option value="="> = </option>
-                                        <option value=">="> >= </option>
-                                        <option value="<="> <= </option>
-                                    {%  endif %}
-                                    {#            This is where we will do the query string for the sql queries#}
-                                </select>
-                                <INPUT TYPE="TEXT" NAME={{ cell }} SIZE="10" id='user_input_{{ cell }}'></b></td>
+                                        <option value="<"> <</option>
+                                        <option value=">"> ></option>
+                                        <option value="="> =</option>
+                                        <option value=">="> >=</option>
+                                        <option value="<="> <=</option>
+                                    {% endif %}
+                                {% endif %}
 
+                            </select>
+                            <INPUT TYPE="TEXT" NAME={{ cell }} SIZE="10" id='user_input_{{ cell }}'></b></td>
 
+                        {% endif %}
                     {% endfor %}
                     <td>
                         <b>
 
-                    </b></td>
+                        </b></td>
                 </tr>
                 {#        filling in the table#}
                 {% for  row in table_contents %}
                     <tr>
                         {% for cell in range((row|length)) %}
-                           {%  if table_contents[0][cell] is number %}
+                            {% if loop.index > 1 %}
+                            {% if table_contents[0][cell] is number %}
 
-                                <td>{{ '%0.4f' % row[cell]|float  }}</td>
-                            {%  else %}
+                                <td>{{ '%0.4f' % row[cell]|float }}</td>
+                            {% else %}
                                 <td>{{ row[cell] }}</td>
-                            {%  endif %}
+                            {% endif %}
+                            {% endif %}
                         {% endfor %}
-                        <td><label><input type="checkbox" value={{ row|join('_') }} /> </label> </td>
+                        <td><label><input type="checkbox" value={{ run_names[row[0]] }}/> </label></td>
                     </tr>
                 {% endfor %}
                 <p>
-                    <label>Regex: <input type="text" name ="regex" value="()" readonly="readonly" id="regInput"/> </label>
+                    <label>Regex: <input type="text" name="regex" value="()" readonly="readonly" id="regInput"/>
+                    </label>
                     <button onclick="copyReg()">Copy Regex</button>
                 </p>
 
@@ -143,14 +154,14 @@
 
     function attachCheckboxHandlers() {
         // get reference to element containing toppings checkboxes
-        var el = document.getElementById('table_rows');
+        let el = document.getElementById('table_rows');
 
         // get reference to input elements in toppings container element
-        var tops = el.getElementsByTagName('input');
+        let tops = el.getElementsByTagName('input');
 
         // assign updateTotal function to onclick property of each checkbox
-        for (var i=0, len=tops.length; i<len; i++) {
-            if ( tops[i].type === 'checkbox' ) {
+        for (let i = 0, len = tops.length; i < len; i++) {
+            if (tops[i].type === 'checkbox') {
                 tops[i].onclick = updateRegex;
             }
         }
@@ -158,70 +169,79 @@
 
     function updateRegex() {
         // 'this' is reference to checkbox clicked on
-        var form = this.form;
+        let form = this.form;
 
         // get current value in total text box, using parseFloat since it is a string
-        var currentRegex = form.elements['regex'].value;
-        var namesWithPipes = currentRegex.substring(1, currentRegex.length-1);
-        if ("()" === currentRegex){
-            form.elements['regex'].value = "("+this.value+")";
+        let currentRegex = form.elements['regex'].value;
+        let namesWithPipes = currentRegex.substring(1, currentRegex.length - 1);
+        if ("()" === currentRegex) {
+            form.elements['regex'].value = "(" + this.value + ")";
             return;
         }
 
         var arr = namesWithPipes.split("|");
         // if check box is checked, add its value to val, otherwise subtract it
-        if ( this.checked ) {
+        if (this.checked) {
             arr.push(this.value);
         } else {
-            var ind = arr.indexOf((this.value));
-            if(ind !== -1){
-                arr.splice(ind,1);
+            let ind = arr.indexOf((this.value));
+            if (ind !== -1) {
+                arr.splice(ind, 1);
             }
         }
 
-        form.elements['regex'].value = "("+arr.join("|")+")";
+        form.elements['regex'].value = "(" + arr.join("|") + ")";
     }
 
     attachCheckboxHandlers();
 
-    function copyReg(){
-        var copyText = document.getElementById("regInput");
+    function copyReg() {
+        let copyText = document.getElementById("regInput");
         copyText.select();
         document.execCommand("copy");
     }
 
-    function getOption(){
-        var sep_string =">.<";
-        // get reference to element containing toppings checkboxes
-        var el = document.getElementById('table_rows');
-        // get reference to input elements in toppings container element
-        var tops = el.getElementsByTagName('input');
-        var new_url = "";
-        // assign updateTotal function to onclick property of each checkbox
-        {#var num_cols= parseInt(document.getElementById('number_of_cols').value, 10);#}
-        {#var num_cols = $('#number_of_cols').data()#}
-        {#var num_cols = ;#}
-        {#var col_names = {{ col_names }}#}
+    function queryredirect() {
+        const sep_string = ">.<";
+        var new_url = window.location.origin + "/runs/" + {{ eid }} +"/";
 
-        for (var i=0; i <{{ number_of_cols }}; i++) {
-
+        var col_names = {{ col_names|safe }};
+        let seen_hyper = false;
+        let hyperQueries = [];
+        let metricQueries = [];
+        for (let i = 1; i <{{ number_of_cols }}; i++) {
+            console.log(new_url);
             //selected comparator
-            var opt = document.getElementById("drop_down_select_" + i);
-            var strOption = opt.value;
+            let dropdown = document.getElementById("drop_down_select_" + i);
+            let comparator = dropdown.value;
             // input val
-            var e = document.getElementById("user_input_" + i).value;
+            let e = document.getElementById("user_input_" + i).value;
 
             // param compared against
-            var col_name = {{ col_names }}[i];
-
-            new_url.concat(col_name.value + sep_string + strOption + sep_string + e);
-
-            if (i < {{ num_hyper_params }}) {
-                new_url.concat("/");
+            let col_name = col_names[i];
+            if (comparator === " ") {
+                continue;
             }
-        }
-        console.window = new_url;
 
+            if (i < {{ num_hyper_params }}-1) {
+                hyperQueries.push(`${col_name}${sep_string}${comparator}${sep_string}${e}`);
+                console.log(hyperQueries);
+            } else if (!(seen_hyper) && i == {{ num_hyper_params }}-1-1) {
+                hyperQueries.push(`1${sep_string}=${sep_string}1/`);
+            } else if (i >= {{ num_hyper_params }}-1) {
+                metricQueries.push(`${col_name}${sep_string}${comparator}${sep_string}${e}`)
+                console.log(metricQueries);
+            }
+
+        }
+        let hypers = hyperQueries.join('|');
+        let metrics = metricQueries.join('|');
+        console.log(hypers);
+        console.log(metrics);
+        new_url = `${new_url}${hypers}/${metrics}`;
+        if (window.href != new_url) {
+            window.location.replace(new_url);
+        }
 
     }
 
