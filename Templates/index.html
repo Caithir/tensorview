@@ -225,17 +225,18 @@
 
             if (i < {{ num_hyper_params }}-1) {
                 hyperQueries.push(`${col_name}${sep_string}${comparator}${sep_string}${e}`);
-                console.log(hyperQueries);
-            } else if (!(seen_hyper) && i == {{ num_hyper_params }}-1-1) {
-                hyperQueries.push(`1${sep_string}=${sep_string}1/`);
-            } else if (i >= {{ num_hyper_params }}-1) {
+            }  else if (i >= {{ num_hyper_params }}-1) {
                 metricQueries.push(`${col_name}${sep_string}${comparator}${sep_string}${e}`)
-                console.log(metricQueries);
             }
 
         }
+        if (hyperQueries.length < 1){
+              hyperQueries.push(`1${sep_string}=${sep_string}1`);
+        }
         let hypers = hyperQueries.join('|');
         let metrics = metricQueries.join('|');
+
+
         console.log(hypers);
         console.log(metrics);
         new_url = `${new_url}${hypers}/${metrics}`;
