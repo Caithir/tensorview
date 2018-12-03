@@ -5,7 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
-
+.idea/tensorview.iml
+.idea/vcms.xml
+.idea/misc.xml
+.idea/modules.xml
 # Distribution / packaging
 .Python
 build/
@@ -123,6 +126,7 @@ dmypy.json
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/*
 
 # Generated files
 .idea/**/contentModel.xml
@@ -159,7 +163,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
-
+.idea/*
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
