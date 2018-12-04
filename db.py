@@ -50,7 +50,7 @@ class Database(object):
                     WHERE {" and ".join([str(query)
                     for query in query])}
                     '''
-        print(sql_query)
+        #print(sql_query)
         return self._conn.execute(sql_query)
 
     def metric_aggregate(self, eid,  num_values, query, order_by=None):

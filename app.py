@@ -25,7 +25,7 @@ def runs_in_experiment(eid, hyperparameter_queries, metric_queries):
         "eid": eid,
         "run_names": t.row_names,
     }
-    print(template_args)
+    #print(template_args)
     return render_template('index.html', **template_args)
 
 
