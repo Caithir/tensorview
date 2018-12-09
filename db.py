@@ -53,12 +53,18 @@ class Database(object):
         #print(sql_query)
         return self._conn.execute(sql_query)
 
-    def metric_aggregate(self, eid,  num_values, query, order_by=None):
+    def metric_aggregate(self, eid, num_values, query, order_by=None):
 
         sql_query = f'''SELECT rid, avg_val
                         FROM (SELECT rid, AVG(val) avg_val
-                              FROM Metric_{query.param}
-                              WHERE eid = {eid}
+                              FROM (SELECT metric.rid, val
+                                    FROM (SELECT eid, rid, MAX(ind) max_ind
+                                          FROM Metric_{query.param}
+                                          where eid = {eid}
+                                          GROUP BY rid) AS agg
+                                    INNER JOIN Metric_{query.param} AS metric
+                                    ON metric.rid = agg.rid AND metric.eid = agg.eid
+                                    WHERE ind > max_ind - {num_values})
                               GROUP BY rid)
                         WHERE avg_val {query.comparator} {query.value}
                         '''
