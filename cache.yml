@@ -1,0 +1,5 @@
+eids: {baselines: 0}
+experiment_hypers:
+  0: [lr, arc, gc, cl]
+experiment_metrics:
+  0: [grad_min, grad_max, train_loss, train_accuracy, val_accuracy, val_loss]

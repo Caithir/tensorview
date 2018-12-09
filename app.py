@@ -25,7 +25,6 @@ def runs_in_experiment(eid, hyperparameter_queries, metric_queries):
         "eid": eid,
         "run_names": t.row_names,
     }
-    print(template_args)
     return render_template('index.html', **template_args)
 
 
@@ -39,25 +38,22 @@ def no_metric_queries_runs_in_experiment(eid, hyperparameter_queries):
     return runs_in_experiment(eid, hyperparameter_queries, [])
 
 
-@app.route("/runs/0")
-def experiments():
-    t = Table(table="Experiment")
-
-    template_args = {
-        "table_name": "Experiments",
-        "headings": t.col_names,
-        "table_contents": list(t.rows)
-    }
-    return render_template('index.html', **template_args)
-
 @app.route("/")
 def landingPage():
     t = Table(table="Experiment")
-
+    rows = t.rows
+    eids = []
+    number_of_runs = []
+    experiment_names = []
+    for row in rows:
+        experiment_names.append(row[1])
+        eids.append(row[0])
+        t_for_count = Table('Run', [Query('eid', '=', row[0])])
+        number_of_runs.append(len(t_for_count.rows))
     template_args = {
-        "experiment_names": ['Expr 1', 'expr 2'],
-        "number_of_runs": ['12', '33'],
-        "eid": ['0', 'edi2'],
+        "experiment_names": experiment_names,
+        "number_of_runs": number_of_runs,
+        "eid": eids,
     }
     return render_template('landing.html', **template_args)
 
@@ -65,11 +61,13 @@ def main():
     # will have to do some argparse stuff here to get log dir and the port
     # logdir and port come from command line
     db_name = "tensorview.db"
-    logdir = './test_data'
+    logdir = './test_data/baselines'
     port = 6886
-
-    experiments = Crawler().crawl(logdir)
-    Database.build_database(db_name, experiments)
+    rebuild = True
+    experiments = {}
+    if rebuild:
+        experiments = Crawler().crawl(logdir)
+    Database.initalize_database(db_name, experiments, rebuild)
     app.run(debug=True, port=port)
 
 

@@ -1,7 +1,7 @@
 import contextlib
 import sqlite3
-from collections import namedtuple
-
+from collections import namedtuple, defaultdict
+import yaml
 
 class Query(namedtuple('Query', ('param', 'comparator', 'value'))):
     def __repr__(self):
@@ -11,7 +11,29 @@ class Query(namedtuple('Query', ('param', 'comparator', 'value'))):
         return f'{self.param} {self.comparator} {self.value}'
 
 
+class Cache:
+    CACHE_NAME = './cache.yml'
 
+    def __init__(self):
+        with open(self.CACHE_NAME, 'r') as f:
+            self.cache = yaml.safe_load(f)
+        self.to_cache = {}
+
+    def add_to_cache(self, name, d):
+        self.to_cache[name] = d
+
+    def get_experiment_hypers(self):
+        return self.cache['experiment_hypers']
+
+    def get_experiment_metrics(self):
+        return self.cache['experiment_metrics']
+
+    def get_eids(self):
+        return self.cache['eids']
+
+    def commit_cache(self):
+        with open(self.CACHE_NAME, 'w') as f:
+            yaml.safe_dump(self.to_cache, f)
 
 
 class Database(object):
@@ -19,38 +41,55 @@ class Database(object):
     def __init__(self):
         # You need to call the build database function before you can make instances of it
         self._conn = Connection(sqlite3.connect(self.db_name))
-        self.eids = {}
 
     @classmethod
-    def build_database(cls, db_filename, experiments, rebuild=True):
+    def initalize_database(cls, db_filename, experiments, rebuild=True):
         setattr(cls, "db_name", db_filename)
+        setattr(cls, 'cache', Cache())
         db = cls()
+        if not rebuild:
+            setattr(cls, 'eids', db.cache.get_eids())
+            setattr(cls, 'experiment_hypers', db.cache.get_experiment_hypers())
+            db._set_experiment_hyperparams(None)
+            return
         db._create_experiment_table()
         db._create_run_table()
         db._create_hyperparameter_table()
         db._parse_logdir_output(experiments)
         db._set_experiment_hyperparams(experiments)
+        db.cache.commit_cache()
 
+    def _set_experiment_hyperparams(self, experiments=None):
+        exp_metrics = {}
+        if experiments:
+            for exp, runs in experiments.items():
+                eid = self.eids[exp]
+                exp_metrics[eid] = [x.replace('/', '_') for x in list(runs.values())[0]['metric'].keys()]
+                self.cache.add_to_cache('experiment_metrics', exp_metrics)
+        else:
+            exp_metrics = self.cache.get_experiment_metrics()
+        setattr(Database, "experiment_metrics", exp_metrics)
 
-
-    def _set_experiment_hyperparams(self, experiments):
-        exp_hypers = {}
-        for exp, runs in experiments.items():
-            eid = self.eids[exp]
-            exp_hypers[eid] = [x.replace('/', '_') for x in list(runs.values())[0]['metric'].keys()]
-
-        setattr(Database, "experiment_hypers", exp_hypers)
-
-
-
-    def run_query(self, table, query=None, order_by=None):
+    def run_query(self, table, query=None, headings=None, order_by=None):
+        if table == 'HyperParameter':
+            return self.run_hyperparameter_query(table, query=query, headings=headings)
         if not query:
             query = (Query('1', '=', '1'),)
         sql_query = f'''SELECT * FROM {table}
                     WHERE {" and ".join([str(query)
                     for query in query])}
                     '''
-        print(sql_query)
+        return self._conn.execute(sql_query)
+
+    def run_hyperparameter_query(self, table, query=None, headings=None, order_by=None):
+        if not query:
+            query = (Query('1', '=', '1'),)
+        if not headings:
+            headings = ('*',)
+        sql_query = f'''SELECT {', '.join(headings)} FROM {table}
+                    WHERE {" and ".join([str(query)
+                    for query in query])}
+                    '''
         return self._conn.execute(sql_query)
 
     def metric_aggregate(self, eid,  num_values, query, order_by=None):
@@ -72,17 +111,20 @@ class Database(object):
         self.populate_tables_from_logdir(logdir_kwargs)
 
     def update_tables_from_logdir(self, experiments):
-
+        eids = {}
         for eid, (experiment_name, runs) in enumerate(experiments.items()):
             with self._cursor() as c:
-                self.eids[experiment_name] = eid
+                eids[experiment_name] = eid
                 c.execute(f"INSERT OR IGNORE INTO Experiment VALUES({eid}, '{experiment_name}');")
                 for rid, (run_name, params) in enumerate(runs.items()):
                     params['id'] = rid
                     c.execute(f"INSERT OR IGNORE INTO Run VALUES({eid}, {rid}, '{run_name}');")
                     c.execute(f"INSERT OR IGNORE INTO HyperParameter (eid, rid) VALUES({eid}, {rid})")
+        self.cache.add_to_cache('eids', eids)
+        self.eids = eids
 
     def populate_tables_from_logdir(self, experiments):
+        experiment_hypers = defaultdict(list)
         for experiment_name, runs in experiments.items():
             eid = self.eids[experiment_name]
             for run, params in runs.items():
@@ -91,12 +133,14 @@ class Database(object):
                     # Hyper parameters
                     for hyper in params['hyper']:
                         col = [i[1] for i in c.execute("PRAGMA table_info(HyperParameter);")]
+                        if hyper not in experiment_hypers[eid]:
+                            experiment_hypers[eid].append(hyper)
                         # Type check
                         is_str = isinstance(params['hyper'][hyper], str)
                         str_format = "'" if is_str else ""
                         if hyper not in col:
                             c.execute(f"ALTER TABLE HyperParameter ADD {hyper} {'varchar(255)' if is_str else 'real'};")
-                            col += [hyper]
+                            col.append(hyper)
 
                         c.execute(f"""UPDATE HyperParameter SET {hyper} = {str_format}{params['hyper'][hyper]}{str_format}
                                       WHERE (eid = {eid} AND rid = {rid});""")
@@ -114,6 +158,10 @@ class Database(object):
 
                         for (i, v) in enumerate(params['metric'][metric]):
                             c.execute(f"INSERT OR IGNORE INTO {name} VALUES({eid}, {rid}, {i}, {v});")
+
+        self.cache.add_to_cache('experiment_hypers', dict(experiment_hypers))
+        setattr(self, 'experiment_hypers', experiment_hypers)
+
 
     def _create_experiment_table(self):
         with self._cursor() as c:
@@ -135,8 +183,6 @@ class Database(object):
                          eid INTEGER NOT NULL REFERENCES Experiment (eid),
                          rid INTEGER NOT NULL REFERENCES Run (rid),
                          PRIMARY KEY (eid, rid));''')
-
-
 
 
 # This is a PEP 249 compliment database implementation
