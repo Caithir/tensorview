@@ -4,36 +4,52 @@
 <head>
     <title>TensorView</title>
     <style>
-        #table {
-            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-            border-collapse: collapse;
-            width: 30%;
-        }
-
-        #table td, #table th {
-            border: 2px solid #ddd;
-            padding: 6px;
-        }
-
-        #table tr:nth-child(even) {
-            background-color: #F1F3FF;
-        }
-
-        #table tr:hover {
-            background-color: #ddd;
-        }
-
+table.blueTable {
+     font-family: "Arial", Gadget, sans-serif;
+      border: 1px solid #1C6EA4;
+      background-color: #EEEEEE;
+      width: 100%;
+      text-align: left;
+      border-collapse: collapse;
+}
+table.blueTable td, table.blueTable th {
+  border: 1px solid #000000;
+  padding: 3px 2px;
+}
+table.blueTable tbody td {
+  font-size: 13px;
+}
+table.blueTable tr:nth-child(even) {
+  background: #FCC05E;
+}
+table.blueTable thead {
+  background: #FB8C01;
+  background: -moz-linear-gradient(top, #fca940 0%, #fb971a 66%, #FB8C01 100%);
+  background: -webkit-linear-gradient(top, #fca940 0%, #fb971a 66%, #FB8C01 100%);
+  background: linear-gradient(to bottom, #fca940 0%, #fb971a 66%, #FB8C01 100%);
+  border-bottom: 2px solid #444444;
+}
+table.blueTable thead th {
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  border-left: 2px solid #D0E4F5;
+}
+table.blueTable thead th:first-child {
+  border-left: none;
+}
         .submit {
             background-color: #98fb98; /* Green */
             border: none;
             color: black;
-            padding: 12px 16px;
+            padding: 4px 6px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            border-radius: 8px;
+            font-size: 13px;
+            font-family: "Arial", Gadget, sans-serif;
+            margin: 2px 2px;
+            border-radius: 4px;
             -webkit-transition-duration: 0.4s; /* Safari */
             transition-duration: 0.4s;
             cursor: pointer;
@@ -50,13 +66,34 @@
             color: white;
         }
 
-        #go_button {
-            background-color: #98fb98;
-            font-size: 14px;
+        .reset {
+            background-color: #1281fb; /* blue */
+            border: none;
+            color: black;
+            padding: 4px 6px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
+            font-size: 13px;
+            font-family: "Arial", Gadget, sans-serif;
+            margin: 2px 2px;
+            border-radius: 4px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
         }
+
+        .reset1 {
+            background-color: white;
+            color: black;
+            border: 2px solid #1281fb;
+        }
+
+        .reset1:hover {
+            background-color: #1281fb;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
@@ -71,22 +108,24 @@
 
     <button class="submit submit1" onclick="queryredirect()">Submit</button>
 {#need to update this to make the href be the original url to refresh the table#}
-    <a href="http://127.0.0.1:5000/runs/0/" class="btn btn-info" role="button">Link Button</a>
+    <a href="http://127.0.0.1:5000/runs/{{ eid }}/" class="reset reset1" role="button">Reset</a>
     <form class="Table_Body" id="table_body">
 
         <div id="table_rows">
 
-            <table id="table">
-                <tbody>
+            <table class ="blueTable" id="table">
+               <thead>
                 {# building the headings of the table #}
                 <tr>
                     {% for cell in headings %}
                         {%  if loop.index > 1  %}
-                        <td><b id="heading_{{ loop.index -2 }}" value="{{ cell }}">{{ cell }}</b></td>
+                        <th><b id="heading_{{ loop.index -2 }}" value="{{ cell }}">{{ cell }}</b></th>
                         {% endif %}
                     {% endfor %}
-                    <td><b>{{ "Graph?" }}</b></td>
+                    <th><b>{{ "Graph?" }}</b></th>
                 </tr>
+                </thead>
+                 <tbody>
                 {# making the drop downs for the query selection#}
                 <tr>
                     {% for cell in range((headings|length)) %}
@@ -202,6 +241,7 @@
         copyText.select();
         document.execCommand("copy");
     }
+
 
     function queryredirect() {
         const sep_string = ">.<";
