@@ -14,9 +14,10 @@ class TableI(object):
 
 class Table(TableI):
 
-    def __init__(self, table, query=None, order_by=None):
+    def __init__(self, table, query=None, headings='all', order_by=None):
         self._db = Database()
-        self._cur = self._db.run_query(table=table, query=query, order_by=order_by)
+        self._cur = self._db.run_query(table=table, query=query, headings=headings, order_by=order_by)
+        self.headings = headings
         self._rows = []
         self._col_names = []
 
@@ -24,6 +25,8 @@ class Table(TableI):
     def col_names(self):
         if not self._col_names:
             self._col_names = [name for name, *_ in self._cur.description]
+            if self.headings != 'all':
+                self._col_names = self.headings
         return self._col_names
 
     @property
@@ -41,26 +44,31 @@ class RunTable(TableI):
         self._db = Database()
         self.eid = eid
         self.row_names = self.get_row_names()
-        # self.row_names = {0:'qwer', 1:'asdf'}
         self.metrics_queries = metric_queries
         self.hyperparameter_queries = hyperparameter_queries
         self.hyperparameter_queries.append(Query('eid', '=', eid))
-        self.hyperparameters = Table("HyperParameter", hyperparameter_queries)
+        hyperparam_headings = ['eid', 'rid', *self._db.experiment_hypers[self.eid]]
+
+        self.hyperparameters = Table("HyperParameter", hyperparameter_queries,
+                                     headings=hyperparam_headings)
         self.metrics = self.get_metrics(eid)
         self.metric_values = self.get_metric_values(eid, metric_queries, num_values)
         self._rows = []
         self.num_hyper = len(self.hyperparameters.col_names)
+        self._col_names = []
 
 
     @property
     def col_names(self):
-        hyperparams_col_names = self.hyperparameters.col_names
-        # # inner list comp will return rid, metric
-        metric_col_names = self.metrics
-        # the first two col names are eid, dont want this in table
-        col_names = hyperparams_col_names[1:]
-        col_names.extend(metric_col_names)
-        return col_names
+        if not self._col_names:
+            hyperparams_col_names = self.hyperparameters.col_names
+            # # inner list comp will return rid, metric
+            metric_col_names = self.metrics
+            # the first col names are eid, dont want this in table
+            col_names = hyperparams_col_names[1:]
+            col_names.extend(metric_col_names)
+            self._col_names = col_names
+        return self._col_names
 
     @property
     def rows(self):
@@ -86,19 +94,17 @@ class RunTable(TableI):
         return self._rows
 
     def get_row_names(self):
-
         _row_names = {}
         q = self._db.run_query('Run', [Query('eid', '=', self.eid)])
         for _, rid, run_name in q:
             _row_names[rid] = run_name
-
         return _row_names
 
     def __iter__(self):
         return self.rows
 
     def get_metrics(self, eid):
-        return self._db.experiment_hypers[eid]
+        return self._db.experiment_metrics[eid]
 
     def get_metric_values(self, eid, metric_queries, num_values):
         queried_metrics = {q.param: q for q in metric_queries}
