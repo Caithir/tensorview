@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="tensorview_pkg",
-	version="0.0.1",
+	version="0.0.0",
 	author="Colter",
 	author_email="colter.norick@gmail.com",
 	description="A small example package",
