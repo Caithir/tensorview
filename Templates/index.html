@@ -64,7 +64,14 @@
 
     <h1>{{ table_name }}</h1>
 
+     <p>
+         <label>Regex: <input type="text" name="regex" value="()" readonly="readonly" id="regInput"/></label>
+         <button onclick="copyReg()">Copy Regex</button>
+     </p>
+
     <button class="submit submit1" onclick="queryredirect()">Submit</button>
+{#need to update this to make the href be the original url to refresh the table#}
+    <a href="http://127.0.0.1:5000/runs/0/" class="btn btn-info" role="button">Link Button</a>
     <form class="Table_Body" id="table_body">
 
         <div id="table_rows">
@@ -132,11 +139,6 @@
                         <td><label><input type="checkbox" value={{ run_names[row[0]] }}/> </label></td>
                     </tr>
                 {% endfor %}
-                <p>
-                    <label>Regex: <input type="text" name="regex" value="()" readonly="readonly" id="regInput"/>
-                    </label>
-                    <button onclick="copyReg()">Copy Regex</button>
-                </p>
 
                 </tbody>
             </table>
@@ -245,6 +247,7 @@
         }
 
     }
+
 
 </script>
 

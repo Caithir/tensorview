@@ -39,7 +39,7 @@ def no_metric_queries_runs_in_experiment(eid, hyperparameter_queries):
     return runs_in_experiment(eid, hyperparameter_queries, [])
 
 
-@app.route("/")
+@app.route("/runs/0")
 def experiments():
     t = Table(table="Experiment")
 
@@ -50,7 +50,16 @@ def experiments():
     }
     return render_template('index.html', **template_args)
 
+@app.route("/")
+def landingPage():
+    t = Table(table="Experiment")
 
+    template_args = {
+        "experiment_names": ['Expr 1', 'expr 2'],
+        "number_of_runs": ['12', '33'],
+        "eid": ['0', 'edi2'],
+    }
+    return render_template('landing.html', **template_args)
 
 def main():
     # will have to do some argparse stuff here to get log dir and the port
