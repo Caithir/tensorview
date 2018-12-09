@@ -76,8 +76,6 @@ def main():
     logdir = args.dir
     num_values = args.num
 
-    #logdir = "./test_data"
-
     # Rebuild if log directory name was provided
     rebuild = (logdir is not None)
     if rebuild:
@@ -89,4 +87,5 @@ def main():
     app.run(debug=True, port=port)
 
 
-main()
+if __name__ == "__name__":
+    main()
