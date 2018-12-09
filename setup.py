@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="tensorview_pkg",
-	version="0.0.0",
-	author="Colter",
+	version="0.0.1",
+	author="Colter Norick",
 	author_email="colter.norick@gmail.com",
-	description="A small example package",
+	description="Allows viewing tensorflow data",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	url="https://github.com/Caithir/tensorview",
