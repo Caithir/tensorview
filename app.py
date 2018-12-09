@@ -4,6 +4,7 @@ from crawler import Crawler
 from db import Database, Query
 from util import QueryConverter
 import json
+import argparse
 
 app = Flask(__name__)
 
@@ -61,13 +62,16 @@ def main():
     # will have to do some argparse stuff here to get log dir and the port
     # logdir and port come from command line
     db_name = "tensorview.db"
-    logdir = './test_data/baselines'
-    port = 6886
-    rebuild = True
-    experiments = {}
-    if rebuild:
-        experiments = Crawler().crawl(logdir)
-    Database.initalize_database(db_name, experiments, rebuild)
+    parser = argparse.ArgumentParser("our program")
+    args = parser.parse_args()
+    num = args.one
+    logdir = args.two
+    port = args.three
+    # logdir = './test_data'
+    # port = 6886
+
+    experiments = Crawler().crawl(logdir)
+    Database.build_database(db_name, experiments)
     app.run(debug=True, port=port)
 
 
