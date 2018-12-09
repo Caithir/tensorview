@@ -13,8 +13,10 @@ app.url_map.converters['query'] = QueryConverter
 
 @app.route("/runs/<int:eid>/<query:hyperparameter_queries>/<query:metric_queries>")
 def runs_in_experiment(eid, hyperparameter_queries, metric_queries):
+    global num_values
+
     # the request will hold the query info
-    t = RunTable(eid, hyperparameter_queries=hyperparameter_queries, metric_queries=metric_queries)
+    t = RunTable(eid, hyperparameter_queries=hyperparameter_queries, metric_queries=metric_queries, num_values=num_values)
 
     template_args = {
         "table_name": "Runs",
@@ -61,17 +63,29 @@ def landingPage():
 def main():
     # will have to do some argparse stuff here to get log dir and the port
     # logdir and port come from command line
-    db_name = "tensorview.db"
-    parser = argparse.ArgumentParser("our program")
-    args = parser.parse_args()
-    num = args.one
-    logdir = args.two
-    port = args.three
-    # logdir = './test_data'
-    # port = 6886
+    global num_values
 
-    experiments = Crawler().crawl(logdir)
-    Database.build_database(db_name, experiments)
+    db_name = "tensorview.db"
+    parser = argparse.ArgumentParser(description="Parses relevant parameters for tensorview")
+    parser.add_argument('--port', dest='port', type=int, default=6886, help="Port number to open server in")
+    parser.add_argument('--dir', dest='dir', help="Log directory to obtain tensorflow event files from")
+    parser.add_argument('-n', dest='num', type=int, default=100, help="Metric parameters are aggregated from N most recent iterations")
+    args = parser.parse_args()
+
+    port = args.port
+    logdir = args.dir
+    num_values = args.num
+
+    #logdir = "./test_data"
+
+    # Rebuild if log directory name was provided
+    rebuild = (logdir is not None)
+    if rebuild:
+        experiments = Crawler().crawl(logdir)
+    else:
+        experiments = None
+
+    Database.initialize_database(db_name, experiments, rebuild)
     app.run(debug=True, port=port)
 
 

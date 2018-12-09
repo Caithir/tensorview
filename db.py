@@ -43,7 +43,7 @@ class Database(object):
         self._conn = Connection(sqlite3.connect(self.db_name))
 
     @classmethod
-    def initalize_database(cls, db_filename, experiments, rebuild=True):
+    def initialize_database(cls, db_filename, experiments, rebuild=True):
         setattr(cls, "db_name", db_filename)
         setattr(cls, 'cache', Cache())
         db = cls()
