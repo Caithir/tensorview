@@ -160,7 +160,7 @@ class Database(object):
                             c.execute(f"INSERT OR IGNORE INTO {name} VALUES({eid}, {rid}, {i}, {v});")
 
         self.cache.add_to_cache('experiment_hypers', dict(experiment_hypers))
-        setattr(self, 'experiment_hypers', experiment_hypers)
+        setattr(Database, 'experiment_hypers', experiment_hypers)
 
 
     def _create_experiment_table(self):
