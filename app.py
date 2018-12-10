@@ -68,7 +68,7 @@ def main():
     db_name = "tensorview.db"
     parser = argparse.ArgumentParser(description="Parses relevant parameters for tensorview")
     parser.add_argument('--port', dest='port', type=int, default=6886, help="Port number to open server in")
-    parser.add_argument('--dir', dest='dir', help="Log directory to obtain tensorflow event files from")
+    parser.add_argument('--logdir', dest='dir', help="Log directory to obtain tensorflow event files from")
     parser.add_argument('-n', dest='num', type=int, default=100, help="Metric parameters are aggregated from N most recent iterations")
     args = parser.parse_args()
 
@@ -78,14 +78,14 @@ def main():
 
     # Rebuild if log directory name was provided
     rebuild = (logdir is not None)
+    experiments = None
     if rebuild:
         experiments = Crawler().crawl(logdir)
-    else:
-        experiments = None
 
+    print("IM RUNNING")
     Database.initialize_database(db_name, experiments, rebuild)
-    app.run(debug=True, port=port)
+    app.run(debug=True, port=port, use_reloader=False)
 
 
-if __name__ == "__name__":
-    main()
+
+main()

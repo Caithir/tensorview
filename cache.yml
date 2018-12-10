@@ -1,0 +1,6 @@
+eids: {8results: 0}
+experiment_hypers:
+  0: [lr, ex, arc, gc, cl, lam]
+experiment_metrics:
+  0: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]

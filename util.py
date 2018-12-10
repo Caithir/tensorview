@@ -5,7 +5,7 @@ from db import Query
 class QueryConverter(BaseConverter):
 
     def to_python(self, value):
-        return [self.query_gen_with_string_comp(*query.split(">.<")) for query in value.split("|")]
+        return [self.query_gen_with_string_comp(*query.split("~")) for query in value.split("|")]
 
     def to_url(self, values):
         return '|'.join(values)
