@@ -42,7 +42,11 @@ Raphael added a feature that converts data from crawler into an actual DB via sq
 
 He wrote the code to create and populate database based on the parameters and values extracted from his crawler. He passed the code to Chris for his ORM and for Colter to integrate it with the front-end development.
 
- He contributed to the final project report and helped fix remaining bugs before the final presentation.
+He wrote the sql query to specifically pick out a limited number of metric values to summarize so that the table can more accurately represent the metric with a single value.
+
+He helped Chris with adding a command line input feature and published the final product to test.PyPi to allow for an easy distribution through pip. The project can be found in this [link](https://test.pypi.org/project/tensorview-pkg/).
+
+He contributed to the final project report and helped fix remaining bugs before the final presentation.
 
 
 Rachel Shapiro: 
