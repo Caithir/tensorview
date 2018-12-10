@@ -14,55 +14,57 @@ Group member list:
 Group member contributions:
 Members: Christopher Ong (co74), Colter Norick (cn80), Raphael Kim (ck174), Rachel Shapiro (rms56), and Shyam Pradheep (sp348).
 
-Christopher Ong: Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Chris also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
+Christopher Ong: 
+Presentat the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Chris also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
 
-Chris worked on implementing an object relational mapper (ORM) using Flask and Python's SQLAlchemy on the back end. Chris also collaborated on designing the overall schema for the project. Chris also worked on creating the tables and helped integrate the front and back end.
+Chris worked on implementing an object relational mapper (ORM) using Flask and Python's SQLAlchemy on the back end. Chris also collaborated on designing the overall schema for the project. He also worked on creating the tables and helped integrate the front and back end.
 Chris additionally also helped in integrating the crawler and the actual DB with the ORM.
 
-Chris also worked with Raphael on db_creator.py to populate the database and to add additional columns to tables. Prepped for the final presentation as well.
+Chris also worked with Raphael on db_creator.py to populate the database and to add additional columns to tables. He helped  prep for the final presentation.
 
 
-Colter Norick - Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Colter also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
+Colter Norick:
+Presented at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Colter also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
 
-Colter got the class that will be interacting with the database sorted out, and starting adding particular functionalities that the project desires. He created the foundation for the intersection of all the pieces that the rest of the group will be working on. Assisted in creating the large scale schema, and overall structure and design of the code base. Added the new feature of processing SQL query from user input, and cleaned up a fair amount of code.
+Colter got the class that interacts with the database sorted out, and added particular functionalities that the project desires. He created the foundation for the intersection of all the pieces that the rest of the group worked on. Assisted in creating the large scale schema, and overall structure and design of the code base. Added the new feature of processing SQL query from user input, and cleaned up a fair amount of code.
 
-Colter also fully connected the front to back end while merging all the branches together. He adjusted some code to do this but also spent a lot of time working out the kinks that arose from compatibility issues. Did some other refactoring of little things.
+Colter also fully connected the front to back end while merging all the branches together. He adjusted some code to do this but also worked out the kinks that arose from compatibility issues. Did some other refactoring of little things.
 
 He also worked with urls set ups and table concatenations.
 
 
-Raphael Kim: Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Raphael also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
+Raphael Kim: 
+Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Raphael also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
 
-Raphael worked with Chris and Colter to create a crawler that will automatically read the tensorflow event file to extract a list of hyper-parameters and metric parameters. He parsed the information into a python object from which the team can create sql tables in accordance to the schema that he helped define.
+Raphael worked with Chris and Colter to create a crawler that automatically reads the TensorFlow event file to extract a list of hyperparameters and metric parameters. He parsed the information into a python object from which the team created sql tables in accordance to the schema that he helped define.
 
 Raphael added a feature that converts data from crawler into an actual DB via sqlite in the pre-defined schema so that Chris's work can directly translate the DB back into python objects with his ORM code.
 
 He wrote the code to create and populate database based on the parameters and values extracted from his crawler. He passed the code to Chris for his ORM and for Colter to integrate it with the front-end development.
 
-He also helped him test the final product.
+ He contributed to the final project report and helped fix remaining bugs before the final presentation.
 
 
-Rachel Shapiro: Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Rachel also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
+Rachel Shapiro: 
+Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Rachel also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
 
-Rachel worked with Shyam to design and implement a very basic interface using Flask, Jinja, and CSS. Additionally, Rachel determined the format in which the table arguments should be passed to into the html file. Rachel worked on further optimising and modifying the interface.
+Rachel worked with Shyam to design and implement a very basic interface using Flask, Jinja2, and CSS. Additionally, Rachel determined the format in which the table arguments should be passed to into the HTML file. Rachel worked on further optimising and modifying the interface.
 
-She worked with Colter and Shyam to continue developing a plan for the features that the team wanted to include in the UI. In addition to preparing the UI code for integration with the back end, Rachel worked on implementing a feature where users, after filtering using the table, can select runs that they would like to visually display on a graph and we generate regexes that they can easily paste into tensorboard to graph them.
+She worked with Colter and Shyam to continue developing a plan for the features that the team wanted to include in the UI. In addition to preparing the UI code for integration with the back end, Rachel implemented a feature where users, after filtering using the table, can select runs that they would like to visually display on a graph and we generate regexes that they can easily paste into tensorboard to graph them.
 
- Rachel created the regex for graphing based on which checkboxes have been selected. Additionally, She worked on updating the url based on the specified user inputs. Furthermore, she worked with Colter to implement the front-end portion of displaying the user-adjusted parameters, modifying the landing page that displays a user's experiments to link to the table with all of the run information displayed, as well as adding CSS to improve appearance.
+ Rachel created the regex for graphing based on which checkboxes have been selected. Additionally, she worked on updating the url based on the specified user inputs. Furthermore, she worked with Colter to implement the front-end portion of displaying the user-adjusted parameters. She also developed the landing page that displays a user's experiments to link to the table with all of the run information displayed, as well as adding CSS to improve appearance.
 
- She also added the landing page and worked with Colter to build the url for the get request.
+She also added the landing page, that displays a user's experiments to link to the table with all of the run information displayed, added a reset button, and worked with Colter to build the url for the get request. Additionally, Rachel helped write and edit the final project report.
 
+Shyam Pradheep:  
 
-Shyam Pradheep:  Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Shyam also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.Found tutorials on Flask and Jinja2 for the team to use
+Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Shyam also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.Found tutorials on Flask and Jinja2 for the team to use
 
 Shyam worked with Rachel in order to help design and code up the front end of the project. Shyam used Jinja2 in collaboration with python in order to complete a rough first draft of the front end.
 
 Shyam sat with Rachel and Colter and figured out steps forward for the front end as the project developed. This includes adding additional features such as copying the Regex string to the clip board and adding a favicon. Shyam was also involved in building the schema for the project. This includes adding additional features. Shyam also worked with Rachel and Colter on integrating the front end with the back end. Helped compile and write up the documents required for the final project demonstration.
 
 Worked with Rachel to add CSS to add to the aesthetic of the front end.
-
-
-
 
 ####################################################################################################
 
