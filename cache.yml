@@ -1,6 +1,36 @@
-eids: {8results: 0}
+eids: {5results: 0, 8results: 1, baselines: 2, baselines_: 10, coolthings: 3, data_for_316: 4,
+  dp: 5, failed_dp_batch: 6, junk: 7, large_lam: 8, llv2: 9}
 experiment_hypers:
   0: [lr, ex, arc, gc, cl, lam]
+  1: [lr, ex, arc, gc, cl, lam]
+  2: [lr, arc, gc, cl]
+  3: [lr, ex, arc, gc, cl, lam]
+  4: [lr, ex, arc, gc, cl, lam]
+  5: [lr, ex, arc, gc, cl, lam]
+  6: [lr, ex, arc, gc, cl, lam]
+  7: [lr, ex, arc, gc, cl, lam]
+  8: [lr, ex, arc, gc, cl, lam]
+  9: [lr, ex, arc, gc, cl, lam]
+  10: [lr, exp, arc, gc, cl, lam]
 experiment_metrics:
   0: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
     train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]
+  1: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]
+  2: [grad_min, grad_max, train_loss, train_accuracy, val_accuracy, val_loss]
+  3: [grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher, train_loss_fisher,
+    val_accuracy_, val_loss_]
+  4: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]
+  5: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]
+  6: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher]
+  7: [Fisher_Diag, loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy,
+    loss_CEval, loss_FIval, val_accuracy, val_loss]
+  8: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]
+  9: [loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy, train_accuracy_fisher,
+    train_loss_fisher, loss_CEval, loss_FIval, val_accuracy_, val_loss_]
+  10: [Fisher_Diag, loss_CE, loss_FI, grad_min, grad_max, train_loss, train_accuracy,
+    val_accuracy, val_loss]

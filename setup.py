@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 	name="tensorview_pkg",
-	version="0.0.2",
+	version="0.0.3",
 	author="Colter Norick",
 	author_email="colter.norick@gmail.com",
 	description="Allows viewing tensorflow data",
