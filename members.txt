@@ -32,6 +32,8 @@ Colter also fully connected the front to back end while merging all the branches
 
 He also worked with urls set ups and table concatenations.
 
+Finally, he fixed a bunch of bugs relating to various buttons and column rows that were showing on the front but shouldn't and helped prepare the final presentation write up.
+
 
 Raphael Kim: 
 Present at the first team meeting at the start of our project. Discussed how the project would be structured and how the responsibilities would be split up between members. Raphael also attended all the team meetings throughout the semester for regular check-ins with the rest of the members.
