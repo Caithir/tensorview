@@ -66,13 +66,13 @@
     <h1>{{ table_name }}</h1>
 
      <p>
-         <label>Regex: <input type="text" name="regex" value="()" readonly="readonly" id="regInput"/></label>
+         <label>Regex: <input type="text" id="regex" name="regex" value="()" readonly="readonly"/></label>
          <button onclick="copyReg()">Copy Regex</button>
      </p>
 
     <button class="submit submit1" onclick="queryredirect()">Submit</button>
 {#need to update this to make the href be the original url to refresh the table#}
-    <a href="http://127.0.0.1:5000/runs/0/" class="btn btn-info" role="button">Reset</a>
+    <a href=".." class="btn btn-info" role="button">Reset</a>
     <form class="Table_Body" id="table_body">
 
         <div id="table_rows">
@@ -137,7 +137,7 @@
                             {% endif %}
                             {% endif %}
                         {% endfor %}
-                        <td><label><input type="checkbox" value={{ run_names[row[0]] }}/> </label></td>
+                        <td><label><input type="checkbox" value="{{ run_names[row[0]] }}"/> </label></td>
                     </tr>
                 {% endfor %}
 
@@ -171,14 +171,13 @@
     }
 
     function updateRegex() {
-        // 'this' is reference to checkbox clicked on
-        let form = this.form;
 
-        // get current value in total text box, using parseFloat since it is a string
-        let currentRegex = form.elements['regex'].value;
+        let form = this.form;
+        console.log(this.value)
+        let currentRegex = document.getElementById('regex').value;
         let namesWithPipes = currentRegex.substring(1, currentRegex.length - 1);
         if ("()" === currentRegex) {
-            form.elements['regex'].value = "(" + this.value + ")";
+            document.getElementById('regex').value = "(" + this.value + ")";
             return;
         }
 
@@ -192,20 +191,20 @@
                 arr.splice(ind, 1);
             }
         }
-
-        form.elements['regex'].value = "(" + arr.join("|") + ")";
+        console.log(arr)
+        document.getElementById('regex').value = "(" + arr.join("|") + ")";
     }
 
     attachCheckboxHandlers();
 
     function copyReg() {
-        let copyText = document.getElementById("regInput");
+        let copyText = document.getElementById("regex");
         copyText.select();
         document.execCommand("copy");
     }
 
     function queryredirect() {
-        const sep_string = ">.<";
+        const sep_string = "~";
         var new_url = window.location.origin + "/runs/" + {{ eid }} +"/";
 
         var col_names = {{ col_names|safe }};
